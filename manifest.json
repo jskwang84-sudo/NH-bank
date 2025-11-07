@@ -2,10 +2,11 @@
   "name": "NH농협은행",
   "short_name": "NH농협",
   "description": "NH농협은행 모바일 뱅킹",
-  "start_url": "/index.html",
+  "start_url": "/NH-bank/index.html",
+  "scope": "/NH-bank/",
   "display": "standalone",
-  "background_color": "#00B050",
-  "theme_color": "#00B050",
+  "background_color": "#008050",
+  "theme_color": "#008050",
   "orientation": "portrait",
   "icons": [
     {
