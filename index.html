@@ -4,65 +4,103 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#00B050" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="NH농협" />
-  <title>NH농협은행</title>
+  <title>NH농협 거래내역조회</title>
   <link rel="manifest" href="/NH-bank/manifest.json" />
-
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;background:#00B050;}
-    #app{width:100vw;height:100vh;display:flex;flex-direction:column;background:linear-gradient(to bottom,#00B050,#008C3C);}
-    .header{background:linear-gradient(to right,#00B050,#00A045);color:white;padding:24px 24px 32px 24px;}
-    .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
-    .header-title{font-size:20px;font-weight:bold;}
-    .user-icon{width:32px;height:32px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;}
-    .account-info{color:rgba(255,255,255,0.8);font-size:14px;margin-bottom:8px;}
-    .balance{font-size:32px;font-weight:bold;margin-bottom:4px;}
-    .account-number{color:rgba(255,255,255,0.8);font-size:12px;}
-    .content{flex:1;overflow-y:auto;background:#F5F5F5;padding:16px;}
-    .transaction-card{background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);overflow:hidden;}
-    .transaction-header{padding:16px;border-bottom:1px solid #F0F0F0;display:flex;justify-content:space-between;align-items:center;}
-    .transaction-title{font-weight:bold;color:#333;}
-    .filter-info{padding:12px 16px;background:#F8F8F8;font-size:12px;color:#666;}
-    .transaction-item{padding:16px;border-bottom:1px solid #F0F0F0;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;background:#F5F5F5;color:#333;}
+    .header{background:white;padding:20px 16px;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10;}
+    .title{font-size:18px;font-weight:bold;text-align:center;}
+    .account-section{background:white;margin:12px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:16px;}
+    .account-title{font-size:14px;color:#777;margin-bottom:8px;}
+    .account-number{font-weight:bold;font-size:16px;margin-bottom:6px;}
+    .account-sub{font-size:13px;color:#888;margin-bottom:12px;}
+    .account-footer{display:flex;justify-content:space-between;align-items:center;}
+    .btn-transfer{border:1px solid #00B050;color:#00B050;background:white;border-radius:6px;padding:8px 12px;font-size:13px;}
+    .info-line{font-size:12px;color:#777;margin:0 16px 8px;display:flex;justify-content:space-between;align-items:center;}
+    .filter-btn{border:none;background:none;font-size:16px;cursor:pointer;}
+    .transaction-card{background:white;margin:0 12px;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+    .transaction-item{padding:14px 16px;border-bottom:1px solid #f0f0f0;}
     .transaction-item:last-child{border-bottom:none;}
-    .transaction-name{font-weight:500;color:#333;font-size:14px;}
-    .transaction-datetime{font-size:12px;color:#999;margin-top:4px;}
-    .transaction-right{text-align:right;margin-top:8px;}
-    .transaction-amount{font-weight:bold;font-size:14px;color:#F44336;}
-    .transaction-balance{font-size:12px;color:#999;margin-top:4px;}
+    .transaction-name{font-weight:600;margin-bottom:4px;}
+    .transaction-date{font-size:12px;color:#999;margin-bottom:6px;}
+    .transaction-amount{font-size:14px;font-weight:bold;color:#F44336;}
+    .transaction-balance{font-size:12px;color:#999;margin-top:2px;}
+
+    /* 모달 */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:none;align-items:flex-end;z-index:1000;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:white;width:100%;border-radius:16px 16px 0 0;padding:24px;}
+    .modal h3{font-size:17px;font-weight:bold;margin-bottom:16px;}
+    .filter-section{margin-bottom:20px;}
+    .filter-label{font-size:14px;margin-bottom:8px;color:#666;}
+    .filter-options{display:grid;gap:8px;}
+    .filter-options.grid-4{grid-template-columns:repeat(4,1fr);}
+    .filter-options.grid-2{grid-template-columns:repeat(2,1fr);}
+    .filter-option{padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:14px;cursor:pointer;}
+    .filter-option.selected{border:2px solid #00B050;background:#E8F5E9;color:#00B050;font-weight:bold;}
+    .submit-btn{width:100%;padding:14px;background:#00B050;color:white;border:none;border-radius:10px;font-size:15px;font-weight:bold;margin-top:10px;}
   </style>
 </head>
 
 <body>
-  <div id="app">
-    <div class="header">
-      <div class="header-top">
-        <h1 class="header-title">NH농협은행</h1>
-        <div class="user-icon">👤</div>
-      </div>
-      <div>
-        <p class="account-info">입출금 통장</p>
-        <h2 class="balance">1,616,380원</h2>
-        <p class="account-number">302-1934-2120-51</p>
-      </div>
-    </div>
+  <div class="header">
+    <div class="title">거래내역조회</div>
+  </div>
 
-    <div class="content">
-      <div class="transaction-card">
-        <div class="transaction-header">
-          <h3 class="transaction-title">거래내역</h3>
+  <div class="account-section">
+    <div class="account-title">어떤 계좌를 조회할까요?</div>
+    <div class="account-number">NH농협 302-1934-2120-51</div>
+    <div class="account-sub">NH페이모아통장(비대면실명확인)</div>
+    <div class="account-footer">
+      <button class="btn-transfer">송금하기</button>
+      <span style="font-size:13px;color:#666;">출금가능금액 <strong>0원</strong></span>
+    </div>
+  </div>
+
+  <div class="info-line">
+    <span id="filterInfo">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</span>
+    <button class="filter-btn" onclick="showFilterModal()">⚙️</button>
+  </div>
+
+  <div class="transaction-card" id="transactionList"></div>
+
+  <!-- 필터 모달 -->
+  <div class="modal-overlay" id="filterModal">
+    <div class="modal">
+      <h3>조회 조건 설정</h3>
+
+      <div class="filter-section">
+        <div class="filter-label">기간</div>
+        <div class="filter-options grid-4">
+          <button class="filter-option selected" data-period="1week">1주일</button>
+          <button class="filter-option" data-period="1month">1개월</button>
+          <button class="filter-option" data-period="3months">3개월</button>
+          <button class="filter-option" data-period="1year">1년</button>
         </div>
-        <div class="filter-info">2025.10.10 ~ 2025.11.04 · 출금 내역</div>
-        <div id="transactionList"></div>
       </div>
+
+      <div class="filter-section">
+        <div class="filter-label">정렬</div>
+        <div class="filter-options grid-2">
+          <button class="filter-option selected" data-sort="latest">최신순</button>
+          <button class="filter-option" data-sort="oldest">과거순</button>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">구분</div>
+        <div class="filter-options grid-2">
+          <button class="filter-option selected" data-type="all">전체</button>
+          <button class="filter-option" data-type="withdraw">출금</button>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="applyFilter()">조회</button>
     </div>
   </div>
 
   <script>
-    // 출금 내역만 반영
     const allTransactions = [
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-04', time: '21:22:32', balance: 0 },
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-03', time: '22:00:55', balance: 0 },
@@ -70,33 +108,59 @@
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-01', time: '21:16:29', balance: 0 },
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-31', time: '20:22:07', balance: 0 },
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-30', time: '20:25:15', balance: 0 },
+      { name: '주성광', type: 'withdraw', amount: 90000, date: '2025-10-30', time: '10:15:17', balance: 0 },
+      { name: '주성광', type: 'withdraw', amount: 10000, date: '2025-10-30', time: '10:14:33', balance: 90000 },
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-29', time: '18:13:15', balance: 0 },
       { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-28', time: '20:51:03', balance: 0 },
+      { name: '주성광', type: 'withdraw', amount: 3620400, date: '2025-10-24', time: '10:18:31', balance: 0 },
       { name: '이희진', type: 'withdraw', amount: 30000, date: '2025-10-10', time: '19:34:52', balance: 0 }
     ];
 
-    function formatNumber(num) {
-      return num.toLocaleString('ko-KR');
+    let filters = { period: '1week', sort: 'latest', type: 'all' };
+
+    function formatNumber(num){ return num.toLocaleString('ko-KR'); }
+
+    function getFilteredTransactions(){
+      let result = [...allTransactions];
+      if(filters.type === 'withdraw') result = result.filter(t => t.type === 'withdraw');
+      if(filters.sort === 'oldest') result.reverse();
+      return result;
     }
 
-    function renderTransactions() {
-      const el = document.getElementById('transactionList');
-      let html = '';
-      allTransactions.forEach(t => {
-        html += `
-          <div class="transaction-item">
-            <div class="transaction-name">${t.name}</div>
-            <div class="transaction-datetime">${t.date} ${t.time}</div>
-            <div class="transaction-right">
-              <div class="transaction-amount">출금 ${formatNumber(t.amount)}원</div>
-              <div class="transaction-balance">잔액 ${formatNumber(t.balance)}원</div>
-            </div>
-          </div>`;
+    function renderTransactions(){
+      const list = document.getElementById('transactionList');
+      const data = getFilteredTransactions();
+      list.innerHTML = data.map(t=>`
+        <div class="transaction-item">
+          <div class="transaction-name">${t.name}</div>
+          <div class="transaction-date">${t.date} ${t.time}</div>
+          <div class="transaction-amount">출금 ${formatNumber(t.amount)}원</div>
+          <div class="transaction-balance">잔액 ${formatNumber(t.balance)}원</div>
+        </div>`).join('');
+    }
+
+    function showFilterModal(){ document.getElementById('filterModal').classList.add('show'); }
+    function hideFilterModal(){ document.getElementById('filterModal').classList.remove('show'); }
+
+    function applyFilter(){
+      const selectedPeriod = document.querySelector('.filter-option[data-period].selected').dataset.period;
+      const selectedSort = document.querySelector('.filter-option[data-sort].selected').dataset.sort;
+      const selectedType = document.querySelector('.filter-option[data-type].selected').dataset.type;
+      filters = { period:selectedPeriod, sort:selectedSort, type:selectedType };
+      hideFilterModal();
+      document.getElementById('filterInfo').innerText = '기간: '+selectedPeriod+' · '+selectedSort+' · '+selectedType;
+      renderTransactions();
+    }
+
+    document.querySelectorAll('.filter-option').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const group = btn.dataset.period ? 'period' : btn.dataset.sort ? 'sort' : 'type';
+        document.querySelectorAll(`[data-${group}]`).forEach(el=>el.classList.remove('selected'));
+        btn.classList.add('selected');
       });
-      el.innerHTML = html;
-    }
+    });
 
-    window.addEventListener('DOMContentLoaded', renderTransactions);
+    window.addEventListener('DOMContentLoaded',renderTransactions);
   </script>
 </body>
 </html>
