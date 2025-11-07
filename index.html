@@ -42,7 +42,8 @@
       padding:16px; margin:10px 4px; cursor:pointer;
     }
     .card:active { transform:scale(.998); }
-    .acct-title { font-size:16px; font-weight:700; margin-bottom:6px; }
+    .acct-title { font-size:16px; font-weight:700; margin-bottom:6px; display:flex; gap:8px; align-items:center; }
+    .limit-pill { font-size:11px; color:#666; background:#f0f0f0; border-radius:12px; padding:4px 8px; }
     .acct-num { font-size:14px; color:#888; }
     .btn-row { display:flex; gap:10px; margin-top:14px; }
     .action-btn { flex:1; height:40px; border:0; border-radius:10px; background:#f1f1f5; font-weight:700; color:#333; }
@@ -80,8 +81,10 @@
     .tx-row { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
     .tx-name { font-size:15.5px; font-weight:700; color:#111; }
     .tx-amount { text-align:right; }
+    .tx-type { font-size:12px; margin-bottom:2px; font-weight:700; }
     .tx-amt { font-size:18px; font-weight:800; }
-    .withdraw { color:#d32f2f; }
+    .deposit { color:#1976d2; }   /* 파랑 */
+    .withdraw { color:#d32f2f; }  /* 빨강 */
     .tx-bal { margin-top:2px; font-size:12.5px; color:#8a8a8a; }
 
     /* ====== 기간/정렬/구분 모달 ====== */
@@ -91,20 +94,14 @@
     .sheet-title { font-size:16px; font-weight:800; }
     .sheet-close { border:0; background:none; font-size:22px; }
     .sheet-body { padding:14px 16px 22px; }
-    .sheet-sec { margin-bottom:14px; }
-    .sec-label { font-size:13px; color:#666; margin:4px 0 8px; }
     .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:14px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px; }
     .opt { padding:12px 8px; border:1px solid #e0e0e0; border-radius:10px; background:#fff; font-size:14px; text-align:center; }
     .opt.selected { border:2px solid #0a7c2f; background:#f0fff6; font-weight:800; color:#0a7c2f; }
-    .apply { margin-top:8px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
+    .apply { margin-top:18px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
 
     .safe { height:16px; }
-
-    /* 한도제한계좌 배지 */
-    .pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:14px; font-size:12px; margin-bottom:6px; }
-    .pill-gray { background:#f1f3f5; color:#666; border:1px solid #e5e7ea; }
   </style>
 </head>
 <body>
@@ -120,12 +117,14 @@
         </div>
       </div>
 
+      <!-- 상단 배너 -->
       <div class="banner">
         <div class="emoji">🐥</div>
         <div class="msg">100% 당첨 <b>올원룰렛!</b> 매일 최대 5만P<br/>오늘은 얼마? <b>지금 확인하세요!</b></div>
       </div>
     </div>
 
+    <!-- 내 계좌 헤더 -->
     <div class="section-header">
       <div class="section-title">내 계좌</div>
       <div class="header-actions">
@@ -134,10 +133,13 @@
       </div>
     </div>
 
+    <!-- 계좌 리스트 (1개) -->
     <div class="section">
       <div id="accountCard" class="card" role="button" aria-label="계좌 보기">
-        <span class="pill pill-gray">한도제한계좌</span>
-        <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
+        <div class="acct-title">
+          <span class="limit-pill">한도제한계좌</span>
+          NH페이모아통장(비대면실명확인)
+        </div>
         <div class="acct-num">302-1934-2120-51</div>
         <div class="btn-row" aria-hidden="true">
           <button class="action-btn" type="button">ATM출금</button>
@@ -147,6 +149,7 @@
       </div>
     </div>
 
+    <!-- 내 모임 섹션 -->
     <div class="section-header">
       <div class="section-title">내 모임</div>
       <div></div>
@@ -161,6 +164,7 @@
       </div>
     </div>
 
+    <!-- 하단 탭 -->
     <nav class="bottom-tabs">
       <div class="tab active">
         <div class="circle">🏠</div><div>홈</div>
@@ -185,7 +189,8 @@
           <div class="bankline">NH농협 302-1934-2120-51</div>
           <div class="acctline">NH페이모아통장(비대면실명확인)</div>
         </div>
-        <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
+        <!-- 기간/정렬/구분 아이콘 -->
+        <button id="openFilter" class="filter-btn" aria-label="설정">⚙️</button>
       </div>
       <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</div>
     </div>
@@ -197,36 +202,29 @@
   <!-- ====== 기간/정렬/구분 바텀시트 ====== -->
   <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-head">
-      <div id="sheetTitle" class="sheet-title">조회기간 선택</div>
+      <div id="sheetTitle" class="sheet-title">조회 설정</div>
       <button class="sheet-close" id="closeSheet" aria-label="닫기">×</button>
     </div>
     <div class="sheet-body">
-      <!-- 기간 -->
-      <div class="sheet-sec">
-        <div class="sec-label">기간</div>
-        <div class="grid-4">
-          <button class="opt opt-period selected" data-period="1week">1주일</button>
-          <button class="opt opt-period" data-period="1month">1개월</button>
-          <button class="opt opt-period" data-period="3months">3개월</button>
-          <button class="opt opt-period" data-period="1year">1년</button>
-        </div>
+      <div style="font-weight:800; margin-bottom:8px;">기간</div>
+      <div class="grid-4">
+        <button class="opt selected" data-period="1week">1주일</button>
+        <button class="opt" data-period="1month">1개월</button>
+        <button class="opt" data-period="3months">3개월</button>
+        <button class="opt" data-period="1year">1년</button>
       </div>
-      <!-- 정렬 -->
-      <div class="sheet-sec">
-        <div class="sec-label">정렬</div>
-        <div class="grid-2">
-          <button class="opt opt-sort selected" data-sort="latest">최신순</button>
-          <button class="opt opt-sort" data-sort="oldest">과거순</button>
-        </div>
+
+      <div style="font-weight:800; margin:16px 0 8px;">정렬</div>
+      <div class="grid-2">
+        <button class="opt selected" data-sort="latest">최신순</button>
+        <button class="opt" data-sort="oldest">과거순</button>
       </div>
-      <!-- 구분 -->
-      <div class="sheet-sec">
-        <div class="sec-label">구분</div>
-        <div class="grid-3">
-          <button class="opt opt-type selected" data-type="all">전체</button>
-          <button class="opt opt-type" data-type="deposit">입금</button>
-          <button class="opt opt-type" data-type="withdraw">출금</button>
-        </div>
+
+      <div style="font-weight:800; margin:16px 0 8px;">구분</div>
+      <div class="grid-3">
+        <button class="opt selected" data-type="all">전체</button>
+        <button class="opt" data-type="deposit">입금</button>
+        <button class="opt" data-type="withdraw">출금</button>
       </div>
 
       <button class="apply" id="applyFilter">조회</button>
@@ -247,22 +245,52 @@
     function openTx() { homeView.classList.add('hiddenLeft'); txView.classList.add('active'); }
     function goHome() { txView.classList.remove('active'); homeView.classList.remove('hiddenLeft'); }
 
-    /* ======= 거래 데이터 / 필터 ======= */
+    /* ======= 거래 데이터 (이미지 11개에서 추출, 19건) ======= */
     const allTransactions = [
-      { type:'withdraw', name:'주성광',  amount:200000, date:'2025-11-06', time:'14:25:05', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-11-04', time:'21:22:32', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-11-03', time:'22:00:55', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-10-31', time:'20:22:07', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-10-30', time:'20:25:15', balance:'0' },
-      { type:'withdraw', name:'주성광',  amount:10000,  date:'2025-10-30', time:'10:14:33', balance:'90,000' },
-      { type:'withdraw', name:'주성광',  amount:3620400,date:'2025-10-24', time:'10:18:31', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:30000,  date:'2025-10-10', time:'19:34:52', balance:'0' },
+      // 2025-01-25
+      { type:'withdraw', name:'이희진',   amount:2824730, date:'2025-01-25', time:'10:08:33', balance:'5,270' },
+      { type:'deposit',  name:'빗썸',     amount:2830000, date:'2025-01-25', time:'10:08:00', balance:'2,830,000' },
+
+      // 2025-01-24
+      { type:'deposit',  name:'가야대급여', amount:3301190, date:'2025-01-24', time:'09:18:45', balance:'3,301,190' },
+
+      // 2025-01-22
+      { type:'withdraw', name:'빗썸-주성광', amount:100000, date:'2025-01-22', time:'13:18:26', balance:'0' },
+      { type:'deposit',  name:'교수상조회',  amount:100000, date:'2025-01-22', time:'13:17:43', balance:'100,000' },
+
+      // 2025-08-25
+      { type:'deposit',  name:'가야대급여', amount:3620400, date:'2025-08-25', time:'10:19:27', balance:'3,620,460' },
+
+      // 2025-07-25
+      { type:'withdraw', name:'이희진',   amount:3157210, date:'2025-07-25', time:'19:05:37', balance:'0' },
+      { type:'deposit',  name:'가야대급여', amount:3537210, date:'2025-07-25', time:'09:17:27', balance:'3,537,210' },
+
+      // 2025-06-30 & 06-29
+      { type:'deposit',  name:'이희진',   amount:170000,  date:'2025-06-30', time:'08:42:29', balance:'170,000' },
+      { type:'withdraw', name:'김경훈',   amount:160000,  date:'2025-06-30', time:'12:27:26', balance:'0' },
+      { type:'deposit',  name:'예금이자', amount:0,       date:'2025-06-29', time:'09:19:17', balance:'0' },
+
+      // 2025-06-02
+      { type:'withdraw', name:'이희진',   amount:1521990, date:'2025-06-02', time:'19:43:03', balance:'0' },
+      { type:'deposit',  name:'주성광',   amount:1520000, date:'2025-06-02', time:'18:24:43', balance:'1,521,990' },
+
+      // 2025-05-30
+      { type:'withdraw', name:'이희진',   amount:3491520, date:'2025-05-30', time:'17:26:14', balance:'1,990' },
+      { type:'deposit',  name:'주성광',   amount:3491520, date:'2025-05-30', time:'17:24:12', balance:'3,493,510' },
+
+      // 2025-04-17
+      { type:'withdraw', name:'주성광',   amount:85700,   date:'2025-04-17', time:'14:36:17', balance:'0' },
+      { type:'deposit',  name:'가야대입학처', amount:82700, date:'2025-04-17', time:'14:33:31', balance:'85,700' },
+
+      // 2024-12-19
+      { type:'withdraw', name:'이희진',   amount:1700000, date:'2024-12-19', time:'20:23:57', balance:'300' },
+      { type:'deposit',  name:'빗썸',     amount:1700000, date:'2024-12-19', time:'20:22:42', balance:'1,700,300' },
     ];
 
+    /* ======= 필터 상태 ======= */
     const filterInfo = document.getElementById('filterInfo');
     const txListEl   = document.getElementById('txList');
 
-    // >>> 추가: type(구분) 포함
     let filterState = { period:'1week', sort:'latest', type:'all' };
 
     function formatAmt(n){ return n.toLocaleString('ko-KR'); }
@@ -282,42 +310,46 @@
 
     function renderList(){
       const r = periodRange(filterState.period);
-
       let items = allTransactions
         .filter(t => new Date(`${t.date}T${t.time}`) >= r.start);
 
-      // >>> 추가: 구분 필터
       if (filterState.type !== 'all') {
         items = items.filter(t => t.type === filterState.type);
       }
 
-      // 정렬
       items.sort((a,b)=> filterState.sort==='latest'
         ? new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
         : new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
 
-      const typeLabels = { all:'전체', deposit:'입금', withdraw:'출금' };
-      filterInfo.textContent = `${r.label} · ${typeLabels[filterState.type]} · ${filterState.sort==='latest'?'최신순':'과거순'}`;
+      const typeLabel = { all:'전체', deposit:'입금', withdraw:'출금' }[filterState.type];
+      filterInfo.textContent =
+        `${r.label} · ${typeLabel} · ${filterState.sort==='latest'?'최신순':'과거순'}`;
 
       if(items.length===0){
         txListEl.innerHTML = `<div style="padding:36px; text-align:center; color:#999;">거래내역이 없습니다</div>`;
         return;
       }
-      txListEl.innerHTML = items.map(t => `
+
+      txListEl.innerHTML = items.map(t => {
+        const isDeposit = t.type === 'deposit';
+        const typeCls = isDeposit ? 'deposit' : 'withdraw';
+        const typeTxt = isDeposit ? '입금' : '출금';
+        return `
         <div class="tx-item">
           <div class="tx-date">${t.date.replaceAll('-','.')} ${t.time}</div>
           <div class="tx-row">
             <div class="tx-name">${t.name}</div>
             <div class="tx-amount">
-              <div class="tx-amt withdraw">${formatAmt(t.amount)}원</div>
+              <div class="tx-type ${typeCls}">${typeTxt}</div>
+              <div class="tx-amt ${typeCls}">${formatAmt(t.amount)}원</div>
               <div class="tx-bal">잔액 ${t.balance}원</div>
             </div>
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
-    /* ======= 바텀시트: 기간/정렬/구분 ======= */
+    /* ======= 바텀시트(기간/정렬/구분) ======= */
     const sheet = document.getElementById('sheet');
     const openFilterBtn = document.getElementById('openFilter');
     const closeSheetBtn = document.getElementById('closeSheet');
@@ -326,32 +358,22 @@
     openFilterBtn.addEventListener('click', ()=> sheet.classList.add('show'));
     closeSheetBtn.addEventListener('click', ()=> sheet.classList.remove('show'));
 
-    // 그룹별 단독 선택 처리
-    function makeSingleSelect(selector, onSelect){
-      const btns = Array.from(document.querySelectorAll(selector));
-      btns.forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          btns.forEach(b=>b.classList.remove('selected'));
-          btn.classList.add('selected');
-          onSelect(btn);
-        });
+    // 옵션 토글
+    document.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const group = btn.dataset.period ? '[data-period]' :
+                      btn.dataset.sort   ? '[data-sort]'   :
+                      '[data-type]';
+        document.querySelectorAll(group).forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
       });
-      return btns;
-    }
-
-    makeSingleSelect('.opt-period',  (btn)=>{/* UI 전용, 실제 적용은 조회 클릭에서 */});
-    makeSingleSelect('.opt-sort',    (btn)=>{/* UI 전용 */});
-    makeSingleSelect('.opt-type',    (btn)=>{/* UI 전용 */});
+    });
 
     applyBtn.addEventListener('click', ()=>{
-      const selPeriod = document.querySelector('.opt-period.selected')?.dataset.period || '1week';
-      const selSort   = document.querySelector('.opt-sort.selected')?.dataset.sort || 'latest';
-      const selType   = document.querySelector('.opt-type.selected')?.dataset.type || 'all';
-
-      filterState.period = selPeriod;
-      filterState.sort   = selSort;
-      filterState.type   = selType;
-
+      const periodSel = document.querySelector('.opt.selected[data-period]')?.dataset.period || '1week';
+      const sortSel   = document.querySelector('.opt.selected[data-sort]')?.dataset.sort   || 'latest';
+      const typeSel   = document.querySelector('.opt.selected[data-type]')?.dataset.type   || 'all';
+      filterState = { period:periodSel, sort:sortSel, type:typeSel };
       sheet.classList.remove('show');
       renderList();
     });
