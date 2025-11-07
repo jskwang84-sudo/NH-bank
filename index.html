@@ -2,312 +2,446 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#00B050" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" sizes="192x192" href="./icon-192.png" />
   <title>NH농협은행</title>
-  <meta name="theme-color" content="#ffffff" />
+
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin:0; padding:0; height:100%; background:#f6f6f6;
-      font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif; color:#222; }
+    /* ---------- 공통 ---------- */
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", sans-serif; background:#f6f7f9; color:#111; }
+    button { font-family:inherit; }
+    .wrap { min-height:100vh; display:flex; flex-direction:column; }
+    .container { flex:1; padding:16px; }
 
-    /* ====== View 전환 ====== */
-    .view { position:fixed; inset:0; background:#fff; overflow-y:auto;
-      transform:translateX(100%); transition:transform .35s ease; }
-    #homeView { transform:translateX(0); }
-    .view.active { transform:translateX(0)!important; }
-    .view.hiddenLeft { transform:translateX(-100%); }
+    .hidden { display:none !important; }
 
-    /* ====== 홈 상단 바 ====== */
-    .topbar { background:#fff; padding:10px 12px 6px; border-bottom:1px solid #eee; }
-    .top-row { display:flex; align-items:center; justify-content:space-between; }
-    .greeting { font-size:22px; font-weight:800; }
-    .right-icons { display:flex; gap:8px; }
-    .icon-btn { width:36px; height:36px; border-radius:18px; background:#f1f3f5; display:flex; align-items:center; justify-content:center; font-size:18px; }
-
-    .banner { margin:10px 0 6px; background:#fff; border:1px solid #eef0f3; border-radius:12px; padding:14px 12px; display:flex; align-items:center; gap:10px; }
-    .banner .emoji { font-size:22px; }
-    .banner .msg { font-size:14px; line-height:1.4; color:#333; }
-    .banner .msg b { color:#0a7c2f; }
-
-    /* 섹션 헤더 */
-    .section-header { background:#fff; border-top:1px solid #eee; border-bottom:1px solid #eee; padding:12px; display:flex; align-items:center; justify-content:space-between; }
-    .section-title { font-size:18px; font-weight:800; }
-    .header-actions { display:flex; gap:12px; }
-    .link-sm { font-size:13px; color:#6563ff; }
-
-    /* 계좌 카드 */
-    .section { padding:14px 12px 20px; }
-    .card {
-      background:#fff; border-radius:14px; box-shadow:0 1px 4px rgba(0,0,0,.06);
-      padding:16px; margin:10px 4px; cursor:pointer;
+    .bar {
+      position:sticky; top:0; z-index:10;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px; border-bottom:1px solid #eee; background:#fff;
     }
-    .card:active { transform:scale(.998); }
-    .acct-title { font-size:16px; font-weight:700; margin-bottom:6px; }
-    .acct-num { font-size:14px; color:#888; }
-    .btn-row { display:flex; gap:10px; margin-top:14px; }
-    .action-btn { flex:1; height:40px; border:0; border-radius:10px; background:#f1f1f5; font-weight:700; color:#333; }
+    .bar-title { font-size:18px; font-weight:800; }
+    .icon-btn { border:0; background:none; padding:6px; font-size:20px; color:#555; }
 
-    /* 내 모임 배너 */
-    .group-card { background:#fff; border-radius:14px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-    .group-title { font-size:15px; color:#555; margin-bottom:10px; }
-    .group-box { background:#f6fbf8; border:1px solid #e3f2ea; border-radius:12px; padding:14px; display:flex; align-items:center; justify-content:space-between; }
-    .pill-btn { background:linear-gradient(90deg,#1fb37b,#2d8eff); color:#fff; border:0; padding:12px 18px; border-radius:22px; font-weight:800; }
+    /* ---------- 카드/섹션 ---------- */
+    .section-title { font-size:18px; font-weight:800; margin:12px 4px 10px; }
+    .card {
+      background:#fff; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,0.06);
+      padding:14px; margin-bottom:14px;
+    }
+    .pill {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:4px 8px; border-radius:14px; font-size:12px;
+    }
+    .pill-gray { background:#f1f3f5; color:#666; border:1px solid #e5e7ea; }
 
-    /* 하단 탭 */
-    .bottom-tabs { position:sticky; bottom:0; background:#fff; border-top:1px solid #eee; display:flex; justify-content:space-around; padding:10px 6px calc(env(safe-area-inset-bottom) + 6px); }
-    .tab { display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11.8px; color:#777; }
-    .tab .circle { width:28px; height:28px; border-radius:14px; background:#f2f2f2; display:flex; align-items:center; justify-content:center; font-size:14px; }
-    .tab.active { color:#0a7c2f; }
-    .tab.active .circle { background:#e8f5ee; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .muted { color:#6b7280; }
+    .strong { font-weight:800; }
 
-    /* ====== 거래내역 ====== */
-    .appbar { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid #eee; height:56px; display:flex; align-items:center; justify-content:center; }
-    .appbar .back { position:absolute; left:6px; top:0; height:56px; width:56px; border:0; background:none; font-size:22px; }
-    .appbar h1 { font-size:18px; font-weight:700; }
+    /* ---------- 홈: 배너 ---------- */
+    .banner {
+      display:flex; align-items:center; gap:12px;
+      background:#fff; border-radius:16px; padding:14px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.06); margin-bottom:16px;
+    }
+    .banner-emoji {
+      width:44px; height:44px; border-radius:50%;
+      background:#fff7cc; display:flex; align-items:center; justify-content:center;
+      font-size:22px;
+    }
+    .banner-title { font-size:15px; font-weight:700; }
+    .banner-sub { font-size:12px; color:#666; margin-top:2px; }
 
-    .summary { background:#fff; border-bottom:1px solid #eee; padding:12px 16px; }
-    .sum-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .bankblock { min-width:0; }
-    .bankline { font-size:15px; font-weight:700; }
-    .acctline { font-size:13px; color:#777; margin-top:2px; }
-    .filter-btn { border:0; background:#f1f3f5; width:40px; height:40px; border-radius:10px; font-size:18px; }
+    /* ---------- 홈: 계좌 카드 ---------- */
+    .acct-title { font-size:16px; font-weight:800; margin:2px 0 6px; }
+    .acct-num { font-size:13px; color:#6b7280; }
+    .acct-footer { display:flex; gap:10px; margin-top:12px; }
+    .chip-btn {
+      border:1px solid #e5e7ea; background:#fff; color:#333; font-weight:700;
+      padding:10px 14px; border-radius:999px; font-size:14px;
+    }
+    .acct-touch { cursor:pointer; }
 
-    .filterline { font-size:12px; color:#666; margin-top:10px; }
+    /* ---------- 하단 탭 ---------- */
+    .tabbar {
+      position:sticky; bottom:0; z-index:10;
+      display:flex; justify-content:space-around; align-items:center;
+      padding:10px 8px; background:#fff; border-top:1px solid #e5e7ea;
+    }
+    .tab { display:flex; flex-direction:column; align-items:center; gap:6px; color:#888; font-size:11px; }
+    .tab.active { color:#00B050; font-weight:800; }
+    .dot { width:8px; height:8px; border-radius:999px; background:currentColor; }
 
-    .tx-list { margin-top:8px; }
-    .tx-item { background:#fff; padding:16px; border-bottom:1px solid #f0f0f0; }
-    .tx-date { font-size:12.5px; color:#8a8a8a; margin-bottom:6px; }
-    .tx-row { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-    .tx-name { font-size:15.5px; font-weight:700; color:#111; }
-    .tx-amount { text-align:right; }
-    .tx-amt { font-size:18px; font-weight:800; }
-    .withdraw { color:#d32f2f; }
-    .tx-bal { margin-top:2px; font-size:12.5px; color:#8a8a8a; }
+    /* ---------- 거래내역 ---------- */
+    .sub-row { font-size:12px; color:#6b7280; }
+    .filter-line {
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:13px; color:#6b7280; padding:10px 0; border-bottom:1px solid #eee;
+    }
 
-    /* ====== 기간 선택 모달 ====== */
-    .sheet { position:fixed; left:0; right:0; bottom:-100%; background:#fff; border-top-left-radius:16px; border-top-right-radius:16px; box-shadow:0 -8px 24px rgba(0,0,0,.18); transition:bottom .28s ease; z-index:30; }
-    .sheet.show { bottom:0; }
-    .sheet-head { padding:14px 16px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
-    .sheet-title { font-size:16px; font-weight:800; }
-    .sheet-close { border:0; background:none; font-size:22px; }
-    .sheet-body { padding:14px 16px 22px; }
-    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    .opt { padding:12px 8px; border:1px solid #e0e0e0; border-radius:10px; background:#fff; font-size:14px; text-align:center; }
-    .opt.selected { border:2px solid #0a7c2f; background:#f0fff6; font-weight:800; color:#0a7c2f; }
-    .apply { margin-top:18px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
+    .txn-card { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+    .txn-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #f0f0f0; }
+    .txn-title { font-size:15px; font-weight:800; }
+    .txn-list .item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid #f0f0f0; }
+    .txn-list .item:last-child { border-bottom:none; }
+    .tname { font-weight:700; }
+    .tdate { font-size:12px; color:#9aa1a9; margin-top:4px; }
+    .tamt { font-weight:800; font-size:15px; color:#f44336; text-align:right; }
+    .tbal { font-size:12px; color:#9aa1a9; text-align:right; margin-top:2px; }
 
-    .safe { height:16px; }
+    /* ---------- 모달 ---------- */
+    .modal {
+      position:fixed; inset:0; display:none; align-items:flex-end; background:rgba(0,0,0,0.45); z-index:50;
+    }
+    .modal.show { display:flex; }
+    .sheet { width:100%; background:#fff; border-radius:20px 20px 0 0; max-height:80vh; overflow:auto; padding:18px; }
+    .sheet-title { font-size:17px; font-weight:800; }
+    .sheet-close { border:0; background:none; font-size:26px; color:#666; }
+
+    .grid { display:grid; gap:8px; }
+    .grid-2 { grid-template-columns:repeat(2, 1fr); }
+    .grid-3 { grid-template-columns:repeat(3, 1fr); }
+    .grid-4 { grid-template-columns:repeat(4, 1fr); }
+    .opt-btn {
+      padding:12px; border:1px solid #e5e7ea; border-radius:10px; background:#fff;
+      font-size:14px; text-align:center; cursor:pointer;
+    }
+    .opt-btn.selected { border:2px solid #00B050; background:#f0fff4; color:#00B050; font-weight:800; }
+    .submit {
+      width:100%; padding:14px; border:0; border-radius:12px; background:#00B050; color:#fff; font-weight:800; margin-top:14px;
+    }
+
+    /* ---------- 설치 버튼(선택) ---------- */
+    #installBtn {
+      position:fixed; right:14px; bottom:86px; z-index:60;
+      display:none; padding:12px 14px; border:0; border-radius:12px; background:#00B050; color:#fff; font-weight:800;
+      box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
+
 <body>
+<div class="wrap">
 
-  <!-- ========================= 홈 ========================= -->
-  <section id="homeView" class="view">
-    <div class="topbar">
-      <div class="top-row">
-        <div class="greeting">주성광님</div>
-        <div class="right-icons">
-          <div class="icon-btn">🔔</div>
-          <div class="icon-btn">☰</div>
+  <!-- ############### 홈 화면 ############### -->
+  <header class="bar" id="homeBar">
+    <div class="bar-title">주성광님</div>
+    <button class="icon-btn" aria-label="알림">⋯</button>
+  </header>
+
+  <main class="container" id="homeView" role="main" aria-label="홈">
+    <!-- 배너 -->
+    <div class="banner">
+      <div class="banner-emoji">🥚</div>
+      <div>
+        <div class="banner-title">100% 당첨 올원룰렛! 매일 최대 5만P</div>
+        <div class="banner-sub">오늘은 얼마? 지금 확인하세요!</div>
+      </div>
+    </div>
+
+    <!-- 내 계좌 -->
+    <div class="section-title">내 계좌</div>
+
+    <div class="card acct-touch" id="accountCard" tabindex="0" role="button"
+         aria-label="NH페이모아통장 거래내역 보기">
+      <!-- 한도제한계좌 뱃지 -->
+      <span class="pill pill-gray" style="margin-bottom:6px;">한도제한계좌</span>
+
+      <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
+      <div class="acct-num">302-1934-2120-51</div>
+
+      <div class="acct-footer" aria-hidden="true">
+        <button type="button" class="chip-btn">ATM출금</button>
+        <button type="button" class="chip-btn">채우기</button>
+        <button type="button" class="chip-btn">보내기</button>
+      </div>
+    </div>
+
+    <!-- 내 모임 (샘플) -->
+    <div class="section-title">내 모임</div>
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="strong" style="margin-bottom:4px;">NH올원모임서비스</div>
+          <div class="muted" style="font-size:12px;">함께하는 순간이 더 쉽고 즐거워지는</div>
+        </div>
+        <button type="button" class="chip-btn">내 자산 확인</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 하단 탭 -->
+  <nav class="tabbar" aria-label="탭바">
+    <div class="tab active"><span class="dot"></span><span>홈</span></div>
+    <div class="tab"><span class="dot"></span><span>상품몰</span></div>
+    <div class="tab"><span class="dot"></span><span>MY</span></div>
+    <div class="tab"><span class="dot"></span><span>P</span></div>
+    <div class="tab"><span class="dot"></span><span>생활혜택</span></div>
+  </nav>
+
+  <!-- ############### 거래내역 화면 ############### -->
+  <header class="bar hidden" id="txnBar">
+    <button class="icon-btn" id="backBtn" aria-label="뒤로">‹</button>
+    <div class="bar-title">거래내역조회</div>
+    <button class="icon-btn" aria-hidden="true">☰</button>
+  </header>
+
+  <main class="container hidden" id="txnView" role="main" aria-label="거래내역 조회">
+    <!-- 계좌 타이틀 -->
+    <div class="card" style="margin-top:0;">
+      <div class="strong" style="font-size:16px; margin-bottom:6px;">NH농협 302-1934-2120-51</div>
+      <div class="sub-row">NH페이모아통장(비대면실명확인)</div>
+    </div>
+
+    <!-- 기간 선택 라인 (좌:기간표시 / 우:필터아이콘) -->
+    <div class="filter-line">
+      <div id="periodLabel">2025.10.31 ~ 2025.11.07 · 전체 · 최신순</div>
+      <button class="icon-btn" id="openFilter" aria-label="조회기간 설정">⚙︎</button>
+    </div>
+
+    <!-- 거래 카드 -->
+    <div class="txn-card" style="margin-top:12px;">
+      <div class="txn-head">
+        <div class="txn-title">거래내역</div>
+        <div class="muted" style="font-size:12px;">현재잔액 <span id="currentBal" class="strong">1,616,380원</span></div>
+      </div>
+      <div class="txn-list" id="txnList"></div>
+    </div>
+  </main>
+
+  <!-- ############### 기간/정렬/구분 모달 ############### -->
+  <div class="modal" id="filterModal" aria-hidden="true">
+    <div class="sheet">
+      <div class="row" style="margin-bottom:14px;">
+        <div class="sheet-title">조회기간 선택</div>
+        <button class="sheet-close" id="closeFilter" aria-label="닫기">×</button>
+      </div>
+
+      <!-- 기간 -->
+      <div style="margin-bottom:14px;">
+        <div class="muted" style="font-size:13px; margin-bottom:8px;">기간</div>
+        <div class="grid grid-4">
+          <button class="opt-btn selected" data-period="1week">1주일</button>
+          <button class="opt-btn" data-period="1month">1개월</button>
+          <button class="opt-btn" data-period="3months">3개월</button>
+          <button class="opt-btn" data-period="1year">1년</button>
+        </div>
+        <div id="dateRangeText" class="muted" style="margin-top:10px; font-size:13px;">
+          2025.10.31 ~ 2025.11.07
         </div>
       </div>
 
-      <!-- 상단 배너 -->
-      <div class="banner">
-        <div class="emoji">🐥</div>
-        <div class="msg">100% 당첨 <b>올원룰렛!</b> 매일 최대 5만P<br/>오늘은 얼마? <b>지금 확인하세요!</b></div>
-      </div>
-    </div>
-
-    <!-- 내 계좌 헤더 -->
-    <div class="section-header">
-      <div class="section-title">내 계좌</div>
-      <div class="header-actions">
-        <div class="link-sm">계좌등록/관리</div>
-        <div class="link-sm">전체계좌조회</div>
-      </div>
-    </div>
-
-    <!-- 계좌 리스트 (1개만) -->
-    <div class="section">
-      <div id="accountCard" class="card" role="button" aria-label="계좌 보기">
-        <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
-        <div class="acct-num">302-1934-2120-51</div>
-        <div class="btn-row" aria-hidden="true">
-          <button class="action-btn" type="button">ATM출금</button>
-          <button class="action-btn" type="button">채우기</button>
-          <button class="action-btn" type="button">보내기</button>
+      <!-- 정렬 -->
+      <div style="margin-bottom:14px;">
+        <div class="muted" style="font-size:13px; margin-bottom:8px;">정렬</div>
+        <div class="grid grid-2">
+          <button class="opt-btn selected" data-sort="latest">최신순</button>
+          <button class="opt-btn" data-sort="oldest">과거순</button>
         </div>
       </div>
-    </div>
 
-    <!-- 내 모임 섹션 -->
-    <div class="section-header">
-      <div class="section-title">내 모임</div>
-      <div></div>
-    </div>
-    <div class="section">
-      <div class="group-card">
-        <div class="group-title">함께하는 순간이 더 쉽고 즐거워지는</div>
-        <div class="group-box">
-          <div>NH올원모임서비스와 함께해요</div>
-          <button class="pill-btn" type="button">내 자산 확인 ⌄</button>
+      <!-- 구분 -->
+      <div style="margin-bottom:4px;">
+        <div class="muted" style="font-size:13px; margin-bottom:8px;">구분</div>
+        <div class="grid grid-3">
+          <button class="opt-btn selected" data-type="all">전체</button>
+          <button class="opt-btn" data-type="deposit">입금</button>
+          <button class="opt-btn" data-type="withdraw">출금</button>
         </div>
       </div>
-    </div>
 
-    <!-- 하단 탭 -->
-    <nav class="bottom-tabs">
-      <div class="tab active">
-        <div class="circle">🏠</div><div>홈</div>
-      </div>
-      <div class="tab"><div class="circle">🛍️</div><div>상품몰</div></div>
-      <div class="tab"><div class="circle">👤</div><div>MY</div></div>
-      <div class="tab"><div class="circle">🅿️</div><div>포인트쌓기</div></div>
-      <div class="tab"><div class="circle">🎁</div><div>생활혜택</div></div>
-    </nav>
-  </section>
-
-  <!-- ====================== 거래내역조회 ===================== -->
-  <section id="txView" class="view">
-    <div class="appbar">
-      <button class="back" aria-label="뒤로" onclick="goHome()">‹</button>
-      <h1>거래내역조회</h1>
+      <button class="submit" id="applyFilter">조회</button>
     </div>
-
-    <div class="summary">
-      <div class="sum-row">
-        <div class="bankblock">
-          <div class="bankline">NH농협 302-1934-2120-51</div>
-          <div class="acctline">NH페이모아통장(비대면실명확인)</div>
-        </div>
-        <!-- 기간 설정 아이콘 (필터) -->
-        <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
-      </div>
-      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</div>
-    </div>
-
-    <div id="txList" class="tx-list"></div>
-    <div class="safe"></div>
-  </section>
-
-  <!-- ====== 기간 선택 모달(바텀시트) ====== -->
-  <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <div class="sheet-head">
-      <div id="sheetTitle" class="sheet-title">조회기간 선택</div>
-      <button class="sheet-close" id="closeSheet" aria-label="닫기">×</button>
-    </div>
-    <div class="sheet-body">
-      <div class="grid-4">
-        <button class="opt selected" data-period="1week">1주일</button>
-        <button class="opt" data-period="1month">1개월</button>
-        <button class="opt" data-period="3months">3개월</button>
-        <button class="opt" data-period="1year">1년</button>
-      </div>
-      <button class="apply" id="applyFilter">조회</button>
-    </div>
-    <div class="safe"></div>
   </div>
 
-  <script>
-    /* ======= 화면 전환 ======= */
-    const homeView = document.getElementById('homeView');
-    const txView   = document.getElementById('txView');
-    const card     = document.getElementById('accountCard');
+  <!-- 설치 유도 버튼(선택) -->
+  <button id="installBtn">앱 설치하기</button>
+</div>
 
-    card.addEventListener('click', (e) => {
-      if (e.target.classList.contains('action-btn')) return; // 버튼은 전환 X
-      openTx();
-    });
-    function openTx() { homeView.classList.add('hiddenLeft'); txView.classList.add('active'); }
-    function goHome() { txView.classList.remove('active'); homeView.classList.remove('hiddenLeft'); }
+<script>
+  /* ======================= View 전환 ======================= */
+  const homeBar = document.getElementById('homeBar');
+  const homeView = document.getElementById('homeView');
+  const txnBar = document.getElementById('txnBar');
+  const txnView = document.getElementById('txnView');
+  const accountCard = document.getElementById('accountCard');
+  const backBtn = document.getElementById('backBtn');
 
-    /* ======= 거래 데이터 / 필터 ======= */
-    // (교수님 캡처 기준, 출금만 반영)
-    const allTransactions = [
-      { type:'withdraw', name:'주성광',  amount:200000, date:'2025-11-06', time:'14:25:05', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-11-04', time:'21:22:32', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-11-03', time:'22:00:55', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-10-31', time:'20:22:07', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:200000, date:'2025-10-30', time:'20:25:15', balance:'0' },
-      { type:'withdraw', name:'주성광',  amount:10000,  date:'2025-10-30', time:'10:14:33', balance:'90,000' },
-      { type:'withdraw', name:'주성광',  amount:3620400,date:'2025-10-24', time:'10:18:31', balance:'0' },
-      { type:'withdraw', name:'이희진',  amount:30000,  date:'2025-10-10', time:'19:34:52', balance:'0' },
-    ];
+  accountCard.addEventListener('click', () => {
+    homeBar.classList.add('hidden');
+    homeView.classList.add('hidden');
+    txnBar.classList.remove('hidden');
+    txnView.classList.remove('hidden');
+  });
 
-    const filterInfo = document.getElementById('filterInfo');
-    const txListEl   = document.getElementById('txList');
+  backBtn.addEventListener('click', () => {
+    txnBar.classList.add('hidden');
+    txnView.classList.add('hidden');
+    homeBar.classList.remove('hidden');
+    homeView.classList.remove('hidden');
+  });
 
-    let filterState = { period:'1week', sort:'latest' };
+  /* ======================= 거래 데이터(출금 중심) ======================= */
+  const allTxns = [
+    // 2025-11
+    { id: 1,  type: 'withdraw', name: '주성광', amount: 200000, date: '2025-11-06', time: '14:25:05', balance: 0 },
+    { id: 2,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-11-04', time: '21:22:32', balance: 0 },
+    { id: 3,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-11-03', time: '22:00:55', balance: 0 },
 
-    function formatAmt(n){ return n.toLocaleString('ko-KR'); }
-    function fmtDate(d){
-      const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+    // 2025-10
+    { id: 4,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-10-31', time: '20:22:07', balance: 0 },
+    { id: 5,  type: 'withdraw', name: '주성광', amount:  90000, date: '2025-10-30', time: '10:15:17', balance: 0 },
+    { id: 6,  type: 'withdraw', name: '주성광', amount:  10000, date: '2025-10-30', time: '10:14:33', balance: 90000 },
+    { id: 7,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-10-30', time: '20:25:15', balance: 0 },
+    { id: 8,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-10-29', time: '18:13:15', balance: 0 },
+    { id: 9,  type: 'withdraw', name: '이희진', amount: 200000, date: '2025-10-28', time: '20:51:03', balance: 0 },
+    { id: 10, type: 'withdraw', name: '주성광', amount: 3620400, date: '2025-10-24', time: '10:18:31', balance: 0 },
+
+    // 2025-10-10 (예시)
+    { id: 11, type: 'withdraw', name: '이희진', amount: 30000, date: '2025-10-10', time: '19:34:52', balance: 0 }
+  ];
+
+  const currentBalEl = document.getElementById('currentBal');
+  currentBalEl.textContent = '1,616,380원';
+
+  /* ======================= 포맷터 ======================= */
+  const fmtNum = (n) => n.toLocaleString('ko-KR');
+
+  /* ======================= 기간/필터 상태 ======================= */
+  const filters = { period: '1week', sort: 'latest', type: 'all' };
+  const periodLabel = document.getElementById('periodLabel');
+  const dateRangeText = document.getElementById('dateRangeText');
+
+  // 기준일(샘플 고정)
+  const BASE_DATE = new Date('2025-11-07T00:00:00');
+
+  function getRange(period) {
+    const end = new Date(BASE_DATE);
+    const start = new Date(end);
+    if (period === '1week')   start.setDate(end.getDate() - 7);
+    if (period === '1month')  start.setMonth(end.getMonth() - 1);
+    if (period === '3months') start.setMonth(end.getMonth() - 3);
+    if (period === '1year')   start.setFullYear(end.getFullYear() - 1);
+
+    const fmt = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
       return `${y}.${m}.${dd}`;
+    };
+    return { start, end, text: `${fmt(start)} ~ ${fmt(end)}` };
+  }
+
+  function applyFilters() {
+    const range = getRange(filters.period);
+    dateRangeText.textContent = range.text;
+
+    let list = allTxns.filter(t => new Date(t.date) >= range.start);
+    if (filters.type !== 'all') list = list.filter(t => t.type === filters.type);
+
+    list.sort((a,b) => {
+      const da = new Date(`${a.date} ${a.time}`);
+      const db = new Date(`${b.date} ${b.time}`);
+      return filters.sort === 'latest' ? (db - da) : (da - db);
+    });
+
+    // 라벨 갱신
+    const pLabel = { '1week':'1주일','1month':'1개월','3months':'3개월','1year':'1년' }[filters.period];
+    const tLabel = { 'all':'전체','deposit':'입금','withdraw':'출금' }[filters.type];
+    const sLabel = { 'latest':'최신순','oldest':'과거순' }[filters.sort];
+    periodLabel.textContent = `${range.text} · ${tLabel} · ${sLabel}`;
+
+    renderTxns(list);
+  }
+
+  function renderTxns(list) {
+    const holder = document.getElementById('txnList');
+    if (!list.length) {
+      holder.innerHTML = `<div style="padding:40px; text-align:center; color:#9aa1a9;">거래내역이 없습니다</div>`;
+      return;
     }
-    function periodRange(period){
-      const end = new Date('2025-11-07T23:59:59'); // 기준일
-      const start = new Date(end);
-      if(period==='1week')  start.setDate(end.getDate()-7);
-      if(period==='1month') start.setMonth(end.getMonth()-1);
-      if(period==='3months')start.setMonth(end.getMonth()-3);
-      if(period==='1year')  start.setFullYear(end.getFullYear()-1);
-      return { start, end, label:`${fmtDate(start)} ~ ${fmtDate(end)}` };
-    }
-
-    function renderList(){
-      const r = periodRange(filterState.period);
-      const items = allTransactions
-        .filter(t => new Date(`${t.date}T${t.time}`) >= r.start)
-        .sort((a,b)=> filterState.sort==='latest'
-            ? new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
-            : new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
-
-      filterInfo.textContent = `${r.label} · 전체 · ${filterState.sort==='latest'?'최신순':'과거순'}`;
-
-      if(items.length===0){
-        txListEl.innerHTML = `<div style="padding:36px; text-align:center; color:#999;">거래내역이 없습니다</div>`;
-        return;
-      }
-      txListEl.innerHTML = items.map(t => `
-        <div class="tx-item">
-          <div class="tx-date">${t.date.replaceAll('-','.')} ${t.time}</div>
-          <div class="tx-row">
-            <div class="tx-name">${t.name}</div>
-            <div class="tx-amount">
-              <div class="tx-amt withdraw">${formatAmt(t.amount)}원</div>
-              <div class="tx-bal">잔액 ${t.balance}원</div>
-            </div>
-          </div>
+    holder.innerHTML = list.map(t => `
+      <div class="item">
+        <div>
+          <div class="tname">${t.name}</div>
+          <div class="tdate">${t.date} ${t.time}</div>
         </div>
-      `).join('');
-    }
+        <div>
+          <div class="tamt">-${fmtNum(t.amount)}원</div>
+          <div class="tbal">잔액 ${fmtNum(t.balance)}원</div>
+        </div>
+      </div>
+    `).join('');
+  }
 
-    /* ======= 기간 선택 바텀시트 ======= */
-    const sheet = document.getElementById('sheet');
-    const openFilterBtn = document.getElementById('openFilter');
-    const closeSheetBtn = document.getElementById('closeSheet');
-    const applyBtn = document.getElementById('applyFilter');
+  /* ======================= 모달/옵션 ======================= */
+  const modal = document.getElementById('filterModal');
+  const openFilter = document.getElementById('openFilter');
+  const closeFilter = document.getElementById('closeFilter');
+  const applyBtn = document.getElementById('applyFilter');
 
-    openFilterBtn.addEventListener('click', ()=> sheet.classList.add('show'));
-    closeSheetBtn.addEventListener('click', ()=> sheet.classList.remove('show'));
+  openFilter.addEventListener('click', () => { modal.classList.add('show'); });
+  closeFilter.addEventListener('click', () => { modal.classList.remove('show'); });
 
-    document.querySelectorAll('.opt').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
+  // 옵션 버튼 토글
+  document.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const groupSelector =
+        btn.hasAttribute('data-period') ? '[data-period]' :
+        btn.hasAttribute('data-sort')   ? '[data-sort]'   :
+        '[data-type]';
+
+      document.querySelectorAll(groupSelector).forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      if (btn.dataset.period) { filters.period = btn.dataset.period; }
+      if (btn.dataset.sort)   { filters.sort   = btn.dataset.sort; }
+      if (btn.dataset.type)   { filters.type   = btn.dataset.type; }
+
+      // 미리보기 날짜 라벨 갱신
+      dateRangeText.textContent = getRange(filters.period).text;
     });
+  });
 
-    applyBtn.addEventListener('click', ()=>{
-      const sel = document.querySelector('.opt.selected')?.dataset.period || '1week';
-      filterState.period = sel;
-      sheet.classList.remove('show');
-      renderList();
+  applyBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+    applyFilters();
+  });
+
+  // 초기 그리기
+  applyFilters();
+
+  /* ======================= PWA: SW 등록 & 설치 유도(선택) ======================= */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('SW 등록 완료'))
+        .catch((e) => console.log('SW 등록 실패', e));
     });
+  }
 
-    // 초기 렌더
-    renderList();
-  </script>
+  // beforeinstallprompt → 설치 버튼 노출 (선택)
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('installBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    installBtn.style.display = 'none';
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  });
+</script>
 </body>
 </html>
