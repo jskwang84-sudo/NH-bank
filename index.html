@@ -84,21 +84,25 @@
     .withdraw { color:#d32f2f; }
     .tx-bal { margin-top:2px; font-size:12.5px; color:#8a8a8a; }
 
-    /* ====== 기간 선택 모달 ====== */
+    /* ====== 기간/정렬/구분 모달 ====== */
     .sheet { position:fixed; left:0; right:0; bottom:-100%; background:#fff; border-top-left-radius:16px; border-top-right-radius:16px; box-shadow:0 -8px 24px rgba(0,0,0,.18); transition:bottom .28s ease; z-index:30; }
     .sheet.show { bottom:0; }
     .sheet-head { padding:14px 16px; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
     .sheet-title { font-size:16px; font-weight:800; }
     .sheet-close { border:0; background:none; font-size:22px; }
     .sheet-body { padding:14px 16px 22px; }
+    .sheet-sec { margin-bottom:14px; }
+    .sec-label { font-size:13px; color:#666; margin:4px 0 8px; }
     .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
     .opt { padding:12px 8px; border:1px solid #e0e0e0; border-radius:10px; background:#fff; font-size:14px; text-align:center; }
     .opt.selected { border:2px solid #0a7c2f; background:#f0fff6; font-weight:800; color:#0a7c2f; }
-    .apply { margin-top:18px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
+    .apply { margin-top:8px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
 
     .safe { height:16px; }
 
-    /* --- [추가] 한도제한계좌 배지 --- */
+    /* 한도제한계좌 배지 */
     .pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:14px; font-size:12px; margin-bottom:6px; }
     .pill-gray { background:#f1f3f5; color:#666; border:1px solid #e5e7ea; }
   </style>
@@ -116,14 +120,12 @@
         </div>
       </div>
 
-      <!-- 상단 배너 -->
       <div class="banner">
         <div class="emoji">🐥</div>
         <div class="msg">100% 당첨 <b>올원룰렛!</b> 매일 최대 5만P<br/>오늘은 얼마? <b>지금 확인하세요!</b></div>
       </div>
     </div>
 
-    <!-- 내 계좌 헤더 -->
     <div class="section-header">
       <div class="section-title">내 계좌</div>
       <div class="header-actions">
@@ -132,12 +134,9 @@
       </div>
     </div>
 
-    <!-- 계좌 리스트 (1개만) -->
     <div class="section">
       <div id="accountCard" class="card" role="button" aria-label="계좌 보기">
-        <!-- [추가] 배지 한 줄 -->
         <span class="pill pill-gray">한도제한계좌</span>
-
         <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
         <div class="acct-num">302-1934-2120-51</div>
         <div class="btn-row" aria-hidden="true">
@@ -148,7 +147,6 @@
       </div>
     </div>
 
-    <!-- 내 모임 섹션 -->
     <div class="section-header">
       <div class="section-title">내 모임</div>
       <div></div>
@@ -163,7 +161,6 @@
       </div>
     </div>
 
-    <!-- 하단 탭 -->
     <nav class="bottom-tabs">
       <div class="tab active">
         <div class="circle">🏠</div><div>홈</div>
@@ -188,7 +185,6 @@
           <div class="bankline">NH농협 302-1934-2120-51</div>
           <div class="acctline">NH페이모아통장(비대면실명확인)</div>
         </div>
-        <!-- 기간 설정 아이콘 (필터) -->
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
       <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</div>
@@ -198,19 +194,41 @@
     <div class="safe"></div>
   </section>
 
-  <!-- ====== 기간 선택 모달(바텀시트) ====== -->
+  <!-- ====== 기간/정렬/구분 바텀시트 ====== -->
   <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <div class="sheet-head">
       <div id="sheetTitle" class="sheet-title">조회기간 선택</div>
       <button class="sheet-close" id="closeSheet" aria-label="닫기">×</button>
     </div>
     <div class="sheet-body">
-      <div class="grid-4">
-        <button class="opt selected" data-period="1week">1주일</button>
-        <button class="opt" data-period="1month">1개월</button>
-        <button class="opt" data-period="3months">3개월</button>
-        <button class="opt" data-period="1year">1년</button>
+      <!-- 기간 -->
+      <div class="sheet-sec">
+        <div class="sec-label">기간</div>
+        <div class="grid-4">
+          <button class="opt opt-period selected" data-period="1week">1주일</button>
+          <button class="opt opt-period" data-period="1month">1개월</button>
+          <button class="opt opt-period" data-period="3months">3개월</button>
+          <button class="opt opt-period" data-period="1year">1년</button>
+        </div>
       </div>
+      <!-- 정렬 -->
+      <div class="sheet-sec">
+        <div class="sec-label">정렬</div>
+        <div class="grid-2">
+          <button class="opt opt-sort selected" data-sort="latest">최신순</button>
+          <button class="opt opt-sort" data-sort="oldest">과거순</button>
+        </div>
+      </div>
+      <!-- 구분 -->
+      <div class="sheet-sec">
+        <div class="sec-label">구분</div>
+        <div class="grid-3">
+          <button class="opt opt-type selected" data-type="all">전체</button>
+          <button class="opt opt-type" data-type="deposit">입금</button>
+          <button class="opt opt-type" data-type="withdraw">출금</button>
+        </div>
+      </div>
+
       <button class="apply" id="applyFilter">조회</button>
     </div>
     <div class="safe"></div>
@@ -230,7 +248,6 @@
     function goHome() { txView.classList.remove('active'); homeView.classList.remove('hiddenLeft'); }
 
     /* ======= 거래 데이터 / 필터 ======= */
-    // (출금만 반영)
     const allTransactions = [
       { type:'withdraw', name:'주성광',  amount:200000, date:'2025-11-06', time:'14:25:05', balance:'0' },
       { type:'withdraw', name:'이희진',  amount:200000, date:'2025-11-04', time:'21:22:32', balance:'0' },
@@ -245,7 +262,8 @@
     const filterInfo = document.getElementById('filterInfo');
     const txListEl   = document.getElementById('txList');
 
-    let filterState = { period:'1week', sort:'latest' };
+    // >>> 추가: type(구분) 포함
+    let filterState = { period:'1week', sort:'latest', type:'all' };
 
     function formatAmt(n){ return n.toLocaleString('ko-KR'); }
     function fmtDate(d){
@@ -264,13 +282,22 @@
 
     function renderList(){
       const r = periodRange(filterState.period);
-      const items = allTransactions
-        .filter(t => new Date(`${t.date}T${t.time}`) >= r.start)
-        .sort((a,b)=> filterState.sort==='latest'
-            ? new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
-            : new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
 
-      filterInfo.textContent = `${r.label} · 전체 · ${filterState.sort==='latest'?'최신순':'과거순'}`;
+      let items = allTransactions
+        .filter(t => new Date(`${t.date}T${t.time}`) >= r.start);
+
+      // >>> 추가: 구분 필터
+      if (filterState.type !== 'all') {
+        items = items.filter(t => t.type === filterState.type);
+      }
+
+      // 정렬
+      items.sort((a,b)=> filterState.sort==='latest'
+        ? new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
+        : new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+      const typeLabels = { all:'전체', deposit:'입금', withdraw:'출금' };
+      filterInfo.textContent = `${r.label} · ${typeLabels[filterState.type]} · ${filterState.sort==='latest'?'최신순':'과거순'}`;
 
       if(items.length===0){
         txListEl.innerHTML = `<div style="padding:36px; text-align:center; color:#999;">거래내역이 없습니다</div>`;
@@ -290,7 +317,7 @@
       `).join('');
     }
 
-    /* ======= 기간 선택 바텀시트 ======= */
+    /* ======= 바텀시트: 기간/정렬/구분 ======= */
     const sheet = document.getElementById('sheet');
     const openFilterBtn = document.getElementById('openFilter');
     const closeSheetBtn = document.getElementById('closeSheet');
@@ -299,16 +326,32 @@
     openFilterBtn.addEventListener('click', ()=> sheet.classList.add('show'));
     closeSheetBtn.addEventListener('click', ()=> sheet.classList.remove('show'));
 
-    document.querySelectorAll('.opt').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
-        btn.classList.add('selected');
+    // 그룹별 단독 선택 처리
+    function makeSingleSelect(selector, onSelect){
+      const btns = Array.from(document.querySelectorAll(selector));
+      btns.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          btns.forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+          onSelect(btn);
+        });
       });
-    });
+      return btns;
+    }
+
+    makeSingleSelect('.opt-period',  (btn)=>{/* UI 전용, 실제 적용은 조회 클릭에서 */});
+    makeSingleSelect('.opt-sort',    (btn)=>{/* UI 전용 */});
+    makeSingleSelect('.opt-type',    (btn)=>{/* UI 전용 */});
 
     applyBtn.addEventListener('click', ()=>{
-      const sel = document.querySelector('.opt.selected')?.dataset.period || '1week';
-      filterState.period = sel;
+      const selPeriod = document.querySelector('.opt-period.selected')?.dataset.period || '1week';
+      const selSort   = document.querySelector('.opt-sort.selected')?.dataset.sort || 'latest';
+      const selType   = document.querySelector('.opt-type.selected')?.dataset.type || 'all';
+
+      filterState.period = selPeriod;
+      filterState.sort   = selSort;
+      filterState.type   = selType;
+
       sheet.classList.remove('show');
       renderList();
     });
