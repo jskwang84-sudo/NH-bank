@@ -85,10 +85,10 @@
     .tx-name { font-size:15.5px; font-weight:700; color:#111; }
 
     .tx-amount { text-align:right; }
-    .tx-type { font-size:13px; margin-bottom:2px; font-weight:700; } /* 추가: 라벨용 */
+    .tx-type { font-size:13px; margin-bottom:2px; font-weight:700; }
     .tx-amt { font-size:18px; font-weight:800; }
-    .deposit { color:#1b78ff; }         /* 추가: 입금 파란색 */
-    .withdraw { color:#d32f2f; }        /* 기존: 출금 빨간색 */
+    .deposit { color:#1b78ff; }
+    .withdraw { color:#d32f2f; }
     .tx-bal { margin-top:2px; font-size:12.5px; color:#8a8a8a; }
 
     /* ====== 기간/정렬/구분 모달 ====== */
@@ -252,8 +252,7 @@
 
     /* ======= 거래 데이터 / 필터 ======= */
     const allTransactions = [
-      // 기존 출금 예시들(보존)
-      { type:'withdraw', name:'주성광',  amount:200000,  date:'2025-11-06', time:'14:25:05', balance:'0' },
+      // (기존 예시 내역 보존)
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-04', time:'21:22:32', balance:'0' },
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-03', time:'22:00:55', balance:'0' },
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-10-31', time:'20:22:07', balance:'0' },
@@ -263,8 +262,8 @@
       { type:'withdraw', name:'이희진',  amount:30000,   date:'2025-10-10', time:'19:34:52', balance:'0' },
     ];
 
-    // 이미지 11장 거래(총 19건) 추가만 함
-    const newTransactions = [
+    /* ====== 추가세트 1: 앞서 업로드한 11개 이미지 (여러 건 포함) ====== */
+    const newTransactionsSet1 = [
       // 2025-01-25
       { type:'withdraw', name:'이희진',       amount:2824730, date:'2025-01-25', time:'10:08:33', balance:'5,270' },
       { type:'deposit',  name:'빗썸',         amount:2830000, date:'2025-01-25', time:'10:08:00', balance:'2,830,000' },
@@ -283,7 +282,7 @@
       { type:'withdraw', name:'이희진',       amount:3157210, date:'2025-07-25', time:'19:05:37', balance:'0' },
       { type:'deposit',  name:'가야대급여',   amount:3537210, date:'2025-07-25', time:'09:17:27', balance:'3,537,210' },
 
-      // 2025-06-30 & 06-29
+      // 2025-06-30/29
       { type:'deposit',  name:'이희진',       amount:170000,  date:'2025-06-30', time:'08:42:29', balance:'170,000' },
       { type:'withdraw', name:'김경훈',       amount:160000,  date:'2025-06-30', time:'12:27:26', balance:'0' },
       { type:'deposit',  name:'예금이자',     amount:0,       date:'2025-06-29', time:'09:19:17', balance:'0' },
@@ -304,7 +303,49 @@
       { type:'withdraw', name:'이희진',       amount:1700000, date:'2024-12-19', time:'20:23:57', balance:'300' },
       { type:'deposit',  name:'빗썸',         amount:1700000, date:'2024-12-19', time:'20:22:42', balance:'1,700,300' },
     ];
-    allTransactions.push(...newTransactions);
+
+    /* ====== 추가세트 2: 이후 업로드하신 10장 + 추가 2장(총 12장) ====== */
+    const newTransactionsSet2 = [
+      // 2025-10-10
+      { type:'deposit',  name:'이효림',         amount:30000,   date:'2025-10-10', time:'19:31:13', balance:'30,000' },
+
+      // 2025-11-01 ~ 11-02
+      { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-01', time:'21:16:29', balance:'0' },
+      { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-02', time:'20:31:13', balance:'0' },
+
+      // 2025-09-13 (쌍으로 올라온 이미지)
+      { type:'withdraw', name:'이희진',         amount:3172380, date:'2025-09-13', time:'16:39:45', balance:'0' },
+      { type:'deposit',  name:'주성광',         amount:3172180, date:'2025-09-13', time:'16:39:05', balance:'3,172,380' },
+
+      // 2025-04-10 / 04-09
+      { type:'withdraw', name:'주성광',         amount:5000,    date:'2025-04-10', time:'09:08:23', balance:'45,000' },
+      { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-04-09', time:'14:09:03', balance:'50,000' },
+
+      // 2025-03-23
+      { type:'deposit',  name:'예금이자',       amount:0,       date:'2025-03-23', time:'11:31:51', balance:'351' },
+
+      // 2025-03-10 (입·출 한 세트)
+      { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-03-10', time:'13:25:43', balance:'50,001' },
+      { type:'withdraw', name:'빗썸-주성광',    amount:50000,   date:'2025-03-10', time:'13:26:43', balance:'1' },
+
+      // 2025-02-10 (입·출 한 세트)
+      { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-02-10', time:'15:16:26', balance:'50,000' },
+      { type:'withdraw', name:'주성광',         amount:50000,   date:'2025-02-10', time:'15:34:44', balance:'0' },
+
+      // 2025-01-16 (입·출 한 세트)
+      { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-01-16', time:'13:50:20', balance:'50,000' },
+      { type:'withdraw', name:'주성광',         amount:50000,   date:'2025-01-16', time:'13:51:01', balance:'0' },
+
+      // 2024-12-11 / 12-10
+      { type:'withdraw', name:'주성광',         amount:50000,   date:'2024-12-11', time:'09:04:09', balance:'0' },
+      { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2024-12-10', time:'10:44:37', balance:'50,000' },
+
+      // 2024-11-25 급여/출금
+      { type:'deposit',  name:'가야대급여',     amount:3284210, date:'2024-11-25', time:'10:15:21', balance:'3,284,210' },
+      { type:'withdraw', name:'빗썸-주성광',    amount:3280000, date:'2024-11-25', time:'10:18:33', balance:'4,210' },
+    ];
+
+    allTransactions.push(...newTransactionsSet1, ...newTransactionsSet2);
 
     const filterInfo = document.getElementById('filterInfo');
     const txListEl   = document.getElementById('txList');
@@ -330,8 +371,7 @@
     function renderList(){
       const r = periodRange(filterState.period);
 
-      let items = allTransactions
-        .filter(t => new Date(`${t.date}T${t.time}`) >= r.start);
+      let items = allTransactions.filter(t => new Date(`${t.date}T${t.time}`) >= r.start);
 
       if (filterState.type !== 'all') {
         items = items.filter(t => t.type === filterState.type);
@@ -376,7 +416,6 @@
     openFilterBtn.addEventListener('click', ()=> sheet.classList.add('show'));
     closeSheetBtn.addEventListener('click', ()=> sheet.classList.remove('show'));
 
-    // 그룹별 단독 선택 처리
     function makeSingleSelect(selector, onSelect){
       const btns = Array.from(document.querySelectorAll(selector));
       btns.forEach(btn=>{
@@ -389,9 +428,9 @@
       return btns;
     }
 
-    makeSingleSelect('.opt-period',  (btn)=>{/* UI 전용, 실제 적용은 조회 클릭에서 */});
-    makeSingleSelect('.opt-sort',    (btn)=>{/* UI 전용 */});
-    makeSingleSelect('.opt-type',    (btn)=>{/* UI 전용 */});
+    makeSingleSelect('.opt-period',  ()=>{});
+    makeSingleSelect('.opt-sort',    ()=>{});
+    makeSingleSelect('.opt-type',    ()=>{});
 
     applyBtn.addEventListener('click', ()=>{
       const selPeriod = document.querySelector('.opt-period.selected')?.dataset.period || '1week';
