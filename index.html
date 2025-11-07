@@ -1,216 +1,102 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#00B050">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NH농협">
-    <title>NH농협은행</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#00B050" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="NH농협" />
+  <title>NH농협은행</title>
+  <link rel="manifest" href="/NH-bank/manifest.json" />
 
-    <!-- ✅ GitHub Pages 경로에 맞게 수정 -->
-    <link rel="manifest" href="/NH-bank/manifest.json">
-
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;overflow:hidden;background:#00B050;}
-        #app{width:100vw;height:100vh;display:flex;flex-direction:column;background:linear-gradient(to bottom,#00B050,#008C3C);}
-        .header{background:linear-gradient(to right,#00B050,#00A045);color:white;padding:24px 24px 32px 24px;}
-        .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
-        .header-title{font-size:20px;font-weight:bold;}
-        .user-icon{width:32px;height:32px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;}
-        .account-info{color:rgba(255,255,255,0.8);font-size:14px;margin-bottom:8px;}
-        .balance{font-size:32px;font-weight:bold;margin-bottom:4px;}
-        .account-number{color:rgba(255,255,255,0.8);font-size:12px;}
-        .content{flex:1;overflow-y:auto;background:#F5F5F5;padding:16px;}
-        .quick-menu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;background:white;border-radius:16px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
-        .quick-menu-item{display:flex;flex-direction:column;align-items:center;gap:8px;border:none;background:none;cursor:pointer;}
-        .quick-icon{width:48px;height:48px;background:#E8F5E9;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#00B050;}
-        .quick-label{font-size:12px;color:#333;}
-        .transaction-card{background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);overflow:hidden;}
-        .transaction-header{padding:16px;border-bottom:1px solid #F0F0F0;display:flex;justify-content:space-between;align-items:center;}
-        .transaction-title{font-weight:bold;color:#333;}
-        .filter-btn{padding:6px 12px;background:#00B050;color:white;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:500;}
-        .filter-info{padding:12px 16px;background:#F8F8F8;font-size:12px;color:#666;}
-        .transaction-item{padding:16px;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;}
-        .transaction-item:last-child{border-bottom:none;}
-        .transaction-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-        .transaction-icon.deposit{background:#E8F5E9;color:#00B050;}
-        .transaction-icon.withdraw{background:#FFEBEE;color:#F44336;}
-        .transaction-name{font-weight:500;color:#333;font-size:14px;}
-        .transaction-datetime{font-size:12px;color:#999;margin-top:4px;}
-        .transaction-right{text-align:right;}
-        .transaction-amount{font-weight:bold;font-size:14px;}
-        .transaction-amount.deposit{color:#00B050;}
-        .transaction-amount.withdraw{color:#F44336;}
-        .transaction-balance{font-size:12px;color:#999;margin-top:4px;}
-        .bottom-nav{background:white;border-top:1px solid #E0E0E0;padding:12px 24px;display:flex;justify-content:space-around;}
-        .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border:none;background:none;cursor:pointer;color:#999;}
-        .nav-item.active{color:#00B050;}
-        .nav-label{font-size:12px;}
-
-        /* 모달 */
-        .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;z-index:1000;}
-        .modal-overlay.show{display:flex;}
-        .modal-content{background:white;width:100%;border-radius:20px 20px 0 0;padding:24px;max-height:80vh;overflow-y:auto;}
-        .filter-label{display:block;font-size:14px;color:#666;margin-bottom:12px;}
-        .filter-options{display:grid;gap:8px;}
-        .filter-options.grid-4{grid-template-columns:repeat(4,1fr);}
-        .filter-options.grid-3{grid-template-columns:repeat(3,1fr);}
-        .filter-option{padding:12px;border:1px solid #E0E0E0;border-radius:8px;background:white;font-size:14px;cursor:pointer;text-align:center;}
-        .filter-option.selected{border:2px solid #00B050;background:#F0FFF4;font-weight:bold;color:#00B050;}
-        .submit-btn{width:100%;padding:16px;background:#00B050;color:white;border:none;border-radius:12px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:16px;}
-    </style>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;background:#00B050;}
+    #app{width:100vw;height:100vh;display:flex;flex-direction:column;background:linear-gradient(to bottom,#00B050,#008C3C);}
+    .header{background:linear-gradient(to right,#00B050,#00A045);color:white;padding:24px 24px 32px 24px;}
+    .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+    .header-title{font-size:20px;font-weight:bold;}
+    .user-icon{width:32px;height:32px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .account-info{color:rgba(255,255,255,0.8);font-size:14px;margin-bottom:8px;}
+    .balance{font-size:32px;font-weight:bold;margin-bottom:4px;}
+    .account-number{color:rgba(255,255,255,0.8);font-size:12px;}
+    .content{flex:1;overflow-y:auto;background:#F5F5F5;padding:16px;}
+    .transaction-card{background:white;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.1);overflow:hidden;}
+    .transaction-header{padding:16px;border-bottom:1px solid #F0F0F0;display:flex;justify-content:space-between;align-items:center;}
+    .transaction-title{font-weight:bold;color:#333;}
+    .filter-info{padding:12px 16px;background:#F8F8F8;font-size:12px;color:#666;}
+    .transaction-item{padding:16px;border-bottom:1px solid #F0F0F0;}
+    .transaction-item:last-child{border-bottom:none;}
+    .transaction-name{font-weight:500;color:#333;font-size:14px;}
+    .transaction-datetime{font-size:12px;color:#999;margin-top:4px;}
+    .transaction-right{text-align:right;margin-top:8px;}
+    .transaction-amount{font-weight:bold;font-size:14px;color:#F44336;}
+    .transaction-balance{font-size:12px;color:#999;margin-top:4px;}
+  </style>
 </head>
 
 <body>
-    <div id="app">
-        <div class="header">
-            <div class="header-top">
-                <h1 class="header-title">NH농협은행</h1>
-                <div class="user-icon">👤</div>
-            </div>
-            <div>
-                <p class="account-info">입출금 통장</p>
-                <h2 class="balance">1,245,000원</h2>
-                <p class="account-number">302-1934-2120-51</p>
-            </div>
-        </div>
-
-        <div class="content">
-            <div class="quick-menu">
-                <button class="quick-menu-item"><div class="quick-icon">💸</div><span class="quick-label">송금</span></button>
-                <button class="quick-menu-item"><div class="quick-icon">💳</div><span class="quick-label">카드</span></button>
-                <button class="quick-menu-item"><div class="quick-icon">📄</div><span class="quick-label">청구서</span></button>
-                <button class="quick-menu-item"><div class="quick-icon">⚙️</div><span class="quick-label">설정</span></button>
-            </div>
-
-            <div class="transaction-card">
-                <div class="transaction-header">
-                    <h3 class="transaction-title">거래내역</h3>
-                    <button class="filter-btn" onclick="showFilterModal()">조회기간 선택</button>
-                </div>
-                <div class="filter-info" id="filterInfo">2025.10.31 ~ 2025.11.07 · 1주일 · 전체 · 최신순</div>
-                <div id="transactionList"></div>
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <button class="nav-item active"><span class="nav-label">홈</span></button>
-            <button class="nav-item"><span class="nav-label">카드</span></button>
-            <button class="nav-item"><span class="nav-label">내역</span></button>
-            <button class="nav-item"><span class="nav-label">MY</span></button>
-        </div>
+  <div id="app">
+    <div class="header">
+      <div class="header-top">
+        <h1 class="header-title">NH농협은행</h1>
+        <div class="user-icon">👤</div>
+      </div>
+      <div>
+        <p class="account-info">입출금 통장</p>
+        <h2 class="balance">1,616,380원</h2>
+        <p class="account-number">302-1934-2120-51</p>
+      </div>
     </div>
 
-    <!-- 🔽 필터 모달 -->
-    <div class="modal-overlay" id="filterModal">
-        <div class="modal-content">
-            <label class="filter-label">기간</label>
-            <div class="filter-options grid-4">
-                <button class="filter-option selected" data-period="1week" onclick="selectPeriod('1week')">1주일</button>
-                <button class="filter-option" data-period="1month" onclick="selectPeriod('1month')">1개월</button>
-                <button class="filter-option" data-period="3months" onclick="selectPeriod('3months')">3개월</button>
-                <button class="filter-option" data-period="1year" onclick="selectPeriod('1year')">1년</button>
-            </div>
-            <label class="filter-label" style="margin-top:20px;">정렬</label>
-            <div class="filter-options grid-3">
-                <button class="filter-option selected" data-sort="latest" onclick="selectSort('latest')">최신순</button>
-                <button class="filter-option" data-sort="oldest" onclick="selectSort('oldest')">과거순</button>
-            </div>
-            <label class="filter-label" style="margin-top:20px;">구분</label>
-            <div class="filter-options grid-3">
-                <button class="filter-option selected" data-type="all" onclick="selectType('all')">전체</button>
-                <button class="filter-option" data-type="deposit" onclick="selectType('deposit')">입금</button>
-                <button class="filter-option" data-type="withdraw" onclick="selectType('withdraw')">출금</button>
-            </div>
-            <button class="submit-btn" onclick="applyFilter()">조회</button>
+    <div class="content">
+      <div class="transaction-card">
+        <div class="transaction-header">
+          <h3 class="transaction-title">거래내역</h3>
         </div>
+        <div class="filter-info">2025.10.10 ~ 2025.11.04 · 출금 내역</div>
+        <div id="transactionList"></div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const allTransactions = [
-            { id:1, type:'withdraw', name:'스타벅스 강남점', amount:5500, date:'2025-11-07', time:'14:23', balance:1245000 },
-            { id:2, type:'deposit', name:'급여 입금', amount:3500000, date:'2025-11-05', time:'09:00', balance:1250500 },
-            { id:3, type:'withdraw', name:'GS25 편의점', amount:8900, date:'2025-11-04', time:'22:15', balance:2750500 },
-            { id:4, type:'withdraw', name:'쿠팡 결제', amount:45600, date:'2025-11-03', time:'16:40', balance:2759400 },
-            { id:5, type:'withdraw', name:'넷플릭스 구독료', amount:17000, date:'2025-11-01', time:'00:05', balance:2805000 },
-            { id:6, type:'deposit', name:'계좌이체 입금', amount:500000, date:'2025-10-28', time:'13:20', balance:2947000 }
-        ];
+  <script>
+    // 출금 내역만 반영
+    const allTransactions = [
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-04', time: '21:22:32', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-03', time: '22:00:55', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-02', time: '20:31:13', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-01', time: '21:16:29', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-31', time: '20:22:07', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-30', time: '20:25:15', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-29', time: '18:13:15', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-28', time: '20:51:03', balance: 0 },
+      { name: '이희진', type: 'withdraw', amount: 30000, date: '2025-10-10', time: '19:34:52', balance: 0 }
+    ];
 
-        let filters = { period:'1week', sort:'latest', type:'all' };
+    function formatNumber(num) {
+      return num.toLocaleString('ko-KR');
+    }
 
-        function formatNumber(num){return num.toLocaleString('ko-KR');}
+    function renderTransactions() {
+      const el = document.getElementById('transactionList');
+      let html = '';
+      allTransactions.forEach(t => {
+        html += `
+          <div class="transaction-item">
+            <div class="transaction-name">${t.name}</div>
+            <div class="transaction-datetime">${t.date} ${t.time}</div>
+            <div class="transaction-right">
+              <div class="transaction-amount">출금 ${formatNumber(t.amount)}원</div>
+              <div class="transaction-balance">잔액 ${formatNumber(t.balance)}원</div>
+            </div>
+          </div>`;
+      });
+      el.innerHTML = html;
+    }
 
-        function getDateRange(period){
-            const today = new Date('2025-11-07');
-            let start = new Date(today);
-            if(period==='1week') start.setDate(today.getDate()-7);
-            else if(period==='1month') start.setMonth(today.getMonth()-1);
-            else if(period==='3months') start.setMonth(today.getMonth()-3);
-            else if(period==='1year') start.setFullYear(today.getFullYear()-1);
-            return {start,text:`${start.getFullYear()}.${String(start.getMonth()+1).padStart(2,'0')}.${String(start.getDate()).padStart(2,'0')} ~ 2025.11.07`};
-        }
-
-        function getFilteredTransactions(){
-            let list = allTransactions.slice();
-            const range = getDateRange(filters.period);
-            list = list.filter(t=>new Date(t.date)>=range.start);
-            if(filters.type!=='all') list=list.filter(t=>t.type===filters.type);
-            list.sort((a,b)=>{
-                const da=new Date(a.date+' '+a.time), db=new Date(b.date+' '+b.time);
-                return filters.sort==='latest'?db-da:da-db;
-            });
-            return list;
-        }
-
-        function renderTransactions(){
-            const list=getFilteredTransactions();
-            const el=document.getElementById('transactionList');
-            if(list.length===0){el.innerHTML='<div style="padding:40px;text-align:center;color:#999;">거래내역이 없습니다</div>';return;}
-            el.innerHTML=list.map(t=>`
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-icon ${t.type}">${t.type==='deposit'?'⬆️':'⬇️'}</div>
-                        <div>
-                            <div class="transaction-name">${t.name}</div>
-                            <div class="transaction-datetime">${t.date} ${t.time}</div>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount ${t.type}">${t.type==='deposit'?'+':'-'}${formatNumber(t.amount)}원</div>
-                        <div class="transaction-balance">${formatNumber(t.balance)}원</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updateFilterInfo(){
-            const pLabel={'1week':'1주일','1month':'1개월','3months':'3개월','1year':'1년'};
-            const tLabel={'all':'전체','deposit':'입금','withdraw':'출금'};
-            const sLabel={'latest':'최신순','oldest':'과거순'};
-            const dRange=getDateRange(filters.period);
-            document.getElementById('filterInfo').textContent=`${dRange.text} · ${pLabel[filters.period]} · ${tLabel[filters.type]} · ${sLabel[filters.sort]}`;
-        }
-
-        function showFilterModal(){document.getElementById('filterModal').classList.add('show');}
-        function hideFilterModal(){document.getElementById('filterModal').classList.remove('show');}
-        function selectPeriod(p){filters.period=p;document.querySelectorAll('[data-period]').forEach(b=>b.classList.remove('selected'));document.querySelector(`[data-period="${p}"]`).classList.add('selected');}
-        function selectSort(s){filters.sort=s;document.querySelectorAll('[data-sort]').forEach(b=>b.classList.remove('selected'));document.querySelector(`[data-sort="${s}"]`)?.classList.add('selected');}
-        function selectType(t){filters.type=t;document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('selected'));document.querySelector(`[data-type="${t}"]`).classList.add('selected');}
-        function applyFilter(){hideFilterModal();renderTransactions();updateFilterInfo();}
-
-        window.addEventListener('DOMContentLoaded',()=>{renderTransactions();updateFilterInfo();});
-
-        // ✅ GitHub Pages 경로 기반 SW 등록
-        if('serviceWorker' in navigator){
-            window.addEventListener('load',function(){
-                navigator.serviceWorker.register('/NH-bank/service-worker.js')
-                .then(()=>console.log('Service Worker 등록 성공'))
-                .catch(err=>console.log('Service Worker 등록 실패:',err));
-            });
-        }
-    </script>
+    window.addEventListener('DOMContentLoaded', renderTransactions);
+  </script>
 </body>
 </html>
