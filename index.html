@@ -1,166 +1,103 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#00B050" />
-  <title>NH농협 거래내역조회</title>
-  <link rel="manifest" href="/NH-bank/manifest.json" />
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;background:#F5F5F5;color:#333;}
-    .header{background:white;padding:20px 16px;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10;}
-    .title{font-size:18px;font-weight:bold;text-align:center;}
-    .account-section{background:white;margin:12px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:16px;}
-    .account-title{font-size:14px;color:#777;margin-bottom:8px;}
-    .account-number{font-weight:bold;font-size:16px;margin-bottom:6px;}
-    .account-sub{font-size:13px;color:#888;margin-bottom:12px;}
-    .account-footer{display:flex;justify-content:space-between;align-items:center;}
-    .btn-transfer{border:1px solid #00B050;color:#00B050;background:white;border-radius:6px;padding:8px 12px;font-size:13px;}
-    .info-line{font-size:12px;color:#777;margin:0 16px 8px;display:flex;justify-content:space-between;align-items:center;}
-    .filter-btn{border:none;background:none;font-size:16px;cursor:pointer;}
-    .transaction-card{background:white;margin:0 12px;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
-    .transaction-item{padding:14px 16px;border-bottom:1px solid #f0f0f0;}
-    .transaction-item:last-child{border-bottom:none;}
-    .transaction-name{font-weight:600;margin-bottom:4px;}
-    .transaction-date{font-size:12px;color:#999;margin-bottom:6px;}
-    .transaction-amount{font-size:14px;font-weight:bold;color:#F44336;}
-    .transaction-balance{font-size:12px;color:#999;margin-top:2px;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NH농협은행</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Sans KR', sans-serif; }
+body { background: #f5f5f5; }
 
-    /* 모달 */
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:none;align-items:flex-end;z-index:1000;}
-    .modal-overlay.show{display:flex;}
-    .modal{background:white;width:100%;border-radius:16px 16px 0 0;padding:24px;}
-    .modal h3{font-size:17px;font-weight:bold;margin-bottom:16px;}
-    .filter-section{margin-bottom:20px;}
-    .filter-label{font-size:14px;margin-bottom:8px;color:#666;}
-    .filter-options{display:grid;gap:8px;}
-    .filter-options.grid-4{grid-template-columns:repeat(4,1fr);}
-    .filter-options.grid-2{grid-template-columns:repeat(2,1fr);}
-    .filter-option{padding:10px;border:1px solid #ddd;border-radius:8px;text-align:center;font-size:14px;cursor:pointer;}
-    .filter-option.selected{border:2px solid #00B050;background:#E8F5E9;color:#00B050;font-weight:bold;}
-    .submit-btn{width:100%;padding:14px;background:#00B050;color:white;border:none;border-radius:10px;font-size:15px;font-weight:bold;margin-top:10px;}
-  </style>
+
+/* View Containers */
+.view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transition: transform 0.4s ease; overflow-y: auto; }
+#homeView { transform: translateX(0); }
+#transactionView { transform: translateX(100%); }
+.active { transform: translateX(0) !important; }
+
+
+/* Header */
+header { padding: 16px; background: #fff; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+header h1 { font-size: 18px; }
+
+
+/* Home */
+.home-header { padding: 20px; font-size: 20px; font-weight: bold; }
+.account-card { background: #fff; margin: 12px; padding: 16px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.account-title { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 6px; }
+.account-number { font-size: 14px; color: #777; margin-bottom: 10px; }
+.button-row { display: flex; gap: 8px; }
+.button-row button { flex: 1; padding: 10px; border: none; border-radius: 6px; background: #f0f0f0; cursor: pointer; font-weight: bold; }
+
+
+/* Transaction */
+.tx-header { font-weight: bold; font-size: 18px; }
+.tx-summary { background: #fff; padding: 16px; border-bottom: 1px solid #eee; }
+.tx-summary p { margin: 4px 0; color: #555; }
+.tx-list { margin-top: 8px; }
+.tx-item { background: #fff; padding: 16px; border-bottom: 1px solid #f0f0f0; }
+.tx-date { font-size: 13px; color: #888; margin-bottom: 4px; }
+.tx-name { font-weight: bold; font-size: 15px; }
+.tx-amount { text-align: right; font-weight: bold; }
+.withdraw { color: #d32f2f; }
+
+
+.back-btn { background: none; border: none; font-size: 20px; cursor: pointer; }
+</style>
 </head>
-
 <body>
-  <div class="header">
-    <div class="title">거래내역조회</div>
-  </div>
 
-  <div class="account-section">
-    <div class="account-title">어떤 계좌를 조회할까요?</div>
-    <div class="account-number">NH농협 302-1934-2120-51</div>
-    <div class="account-sub">NH페이모아통장(비대면실명확인)</div>
-    <div class="account-footer">
-      <button class="btn-transfer">송금하기</button>
-      <span style="font-size:13px;color:#666;">출금가능금액 <strong>0원</strong></span>
-    </div>
-  </div>
 
-  <div class="info-line">
-    <span id="filterInfo">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</span>
-    <button class="filter-btn" onclick="showFilterModal()">⚙️</button>
-  </div>
+<!-- 홈 화면 -->
+<section id="homeView" class="view">
+<div class="home-header">주성광님</div>
 
-  <div class="transaction-card" id="transactionList"></div>
 
-  <!-- 필터 모달 -->
-  <div class="modal-overlay" id="filterModal">
-    <div class="modal">
-      <h3>조회 조건 설정</h3>
+<div class="account-card" onclick="openTransactionView()">
+<div class="account-title">NH페이모아통장(비대면실명확인)</div>
+<div class="account-number">302-1934-2120-51</div>
+<div class="button-row">
+<button>ATM출금</button>
+<button>채우기</button>
+<button>보내기</button>
+</div>
+</div>
+</section>
 
-      <div class="filter-section">
-        <div class="filter-label">기간</div>
-        <div class="filter-options grid-4">
-          <button class="filter-option selected" data-period="1week">1주일</button>
-          <button class="filter-option" data-period="1month">1개월</button>
-          <button class="filter-option" data-period="3months">3개월</button>
-          <button class="filter-option" data-period="1year">1년</button>
-        </div>
-      </div>
 
-      <div class="filter-section">
-        <div class="filter-label">정렬</div>
-        <div class="filter-options grid-2">
-          <button class="filter-option selected" data-sort="latest">최신순</button>
-          <button class="filter-option" data-sort="oldest">과거순</button>
-        </div>
-      </div>
+<!-- 거래내역 화면 -->
+<section id="transactionView" class="view">
+<header>
+<button class="back-btn" onclick="goHome()">←</button>
+<h1 class="tx-header">거래내역조회</h1>
+<div></div>
+</header>
 
-      <div class="filter-section">
-        <div class="filter-label">구분</div>
-        <div class="filter-options grid-2">
-          <button class="filter-option selected" data-type="all">전체</button>
-          <button class="filter-option" data-type="withdraw">출금</button>
-        </div>
-      </div>
 
-      <button class="submit-btn" onclick="applyFilter()">조회</button>
-    </div>
-  </div>
+<div class="tx-summary">
+<p><strong>NH농협</strong> 302-1934-2120-51</p>
+<p>NH페이모아통장(비대면실명확인)</p>
+<p style="margin-top:6px;">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</p>
+</div>
 
-  <script>
-    const allTransactions = [
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-04', time: '21:22:32', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-03', time: '22:00:55', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-02', time: '20:31:13', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-11-01', time: '21:16:29', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-31', time: '20:22:07', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-30', time: '20:25:15', balance: 0 },
-      { name: '주성광', type: 'withdraw', amount: 90000, date: '2025-10-30', time: '10:15:17', balance: 0 },
-      { name: '주성광', type: 'withdraw', amount: 10000, date: '2025-10-30', time: '10:14:33', balance: 90000 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-29', time: '18:13:15', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 200000, date: '2025-10-28', time: '20:51:03', balance: 0 },
-      { name: '주성광', type: 'withdraw', amount: 3620400, date: '2025-10-24', time: '10:18:31', balance: 0 },
-      { name: '이희진', type: 'withdraw', amount: 30000, date: '2025-10-10', time: '19:34:52', balance: 0 }
-    ];
 
-    let filters = { period: '1week', sort: 'latest', type: 'all' };
-
-    function formatNumber(num){ return num.toLocaleString('ko-KR'); }
-
-    function getFilteredTransactions(){
-      let result = [...allTransactions];
-      if(filters.type === 'withdraw') result = result.filter(t => t.type === 'withdraw');
-      if(filters.sort === 'oldest') result.reverse();
-      return result;
-    }
-
-    function renderTransactions(){
-      const list = document.getElementById('transactionList');
-      const data = getFilteredTransactions();
-      list.innerHTML = data.map(t=>`
-        <div class="transaction-item">
-          <div class="transaction-name">${t.name}</div>
-          <div class="transaction-date">${t.date} ${t.time}</div>
-          <div class="transaction-amount">출금 ${formatNumber(t.amount)}원</div>
-          <div class="transaction-balance">잔액 ${formatNumber(t.balance)}원</div>
-        </div>`).join('');
-    }
-
-    function showFilterModal(){ document.getElementById('filterModal').classList.add('show'); }
-    function hideFilterModal(){ document.getElementById('filterModal').classList.remove('show'); }
-
-    function applyFilter(){
-      const selectedPeriod = document.querySelector('.filter-option[data-period].selected').dataset.period;
-      const selectedSort = document.querySelector('.filter-option[data-sort].selected').dataset.sort;
-      const selectedType = document.querySelector('.filter-option[data-type].selected').dataset.type;
-      filters = { period:selectedPeriod, sort:selectedSort, type:selectedType };
-      hideFilterModal();
-      document.getElementById('filterInfo').innerText = '기간: '+selectedPeriod+' · '+selectedSort+' · '+selectedType;
-      renderTransactions();
-    }
-
-    document.querySelectorAll('.filter-option').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const group = btn.dataset.period ? 'period' : btn.dataset.sort ? 'sort' : 'type';
-        document.querySelectorAll(`[data-${group}]`).forEach(el=>el.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-    });
-
-    window.addEventListener('DOMContentLoaded',renderTransactions);
-  </script>
-</body>
+<div class="tx-list">
+<div class="tx-item">
+<div class="tx-date">2025.11.06 14:25:05</div>
+<div class="tx-name">주성광</div>
+<div class="tx-amount withdraw">200,000원 출금</div>
+</div>
+<div class="tx-item">
+<div class="tx-date">2025.11.04 21:22:32</div>
+<div class="tx-name">이희진</div>
+<div class="tx-amount withdraw">200,000원 출금</div>
+</div>
+<div class="tx-item">
+<div class="tx-date">2025.11.03 22:00:55</div>
+<div class="tx-name">이희진</div>
+<div class="tx-amount withdraw">200,000원 출금</div>
+</div>
+<div class="tx-item">
+<div class="tx-date">2025.10.31 20:22:07</div>
+<div class="tx-name">이희진</div>
 </html>
