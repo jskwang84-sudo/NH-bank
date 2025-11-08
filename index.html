@@ -51,6 +51,11 @@
     .pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:14px; font-size:12px; margin-bottom:6px; }
     .pill-gray { background:#f1f3f5; color:#666; border:1px solid #e5e7ea; }
 
+    /* 출금가능금액 라인 (추가) */
+    .availline { font-size:13px; color:#555; margin-top:6px; }
+    .availline b { font-weight:800; color:#111; }
+    .avail-right { text-align:right; }
+
     /* 내 모임 배너 */
     .group-card { background:#fff; border-radius:14px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
     .group-title { font-size:15px; color:#555; margin-bottom:10px; }
@@ -142,6 +147,10 @@
         <span class="pill pill-gray">한도제한계좌</span>
         <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
         <div class="acct-num">302-1934-2120-51</div>
+
+        <!-- 출금가능금액 표시 (추가) -->
+        <div class="availline avail-right">출금가능금액 <b id="availHome">-</b></div>
+
         <div class="btn-row" aria-hidden="true">
           <button class="action-btn" type="button">ATM출금</button>
           <button class="action-btn" type="button">채우기</button>
@@ -187,6 +196,8 @@
         <div class="bankblock">
           <div class="bankline">NH농협 302-1934-2120-51</div>
           <div class="acctline">NH페이모아통장(비대면실명확인)</div>
+          <!-- 출금가능금액 표시 (추가) -->
+          <div class="availline">출금가능금액 <b id="availTx">-</b></div>
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
@@ -265,78 +276,42 @@
 
     /* ====== 추가세트 1: 앞서 업로드한 11개 이미지 (여러 건 포함) ====== */
     const newTransactionsSet1 = [
-      // 2025-01-25
       { type:'withdraw', name:'이희진',       amount:2824730, date:'2025-01-25', time:'10:08:33', balance:'0' },
-      
-      // 2025-01-24
       { type:'deposit',  name:'가야대급여',   amount:2820520, date:'2025-01-24', time:'09:18:45', balance:'2,824,730' },
-
-      // 2025-01-22
-      { type:'withdraw', name:'정두순',  amount:100000,  date:'2025-01-23', time:'10:18:26', balance:'4,210' },
+      { type:'withdraw', name:'정두순',       amount:100000,  date:'2025-01-23', time:'10:18:26', balance:'4,210' },
       { type:'deposit',  name:'교수상조회',    amount:100000,  date:'2025-01-22', time:'13:17:43', balance:'104,210' },
-       
-      // 2025-08-25
       { type:'deposit',  name:'가야대급여',   amount:3172380, date:'2025-08-25', time:'10:19:27', balance:'3,172,380' },
-
-      // 2025-07-25
       { type:'withdraw', name:'이희진',       amount:3157210, date:'2025-07-25', time:'19:05:37', balance:'0' },
       { type:'deposit',  name:'가야대급여',   amount:3157210, date:'2025-07-25', time:'09:17:27', balance:'3,157,210' },
-
-      // 2025-06-30/29
       { type:'deposit',  name:'이희진',       amount:170000,  date:'2025-06-30', time:'08:42:29', balance:'170,000' },
       { type:'withdraw', name:'김경훈',       amount:170000,  date:'2025-06-30', time:'12:27:26', balance:'0' },
       { type:'deposit',  name:'예금이자',     amount:0,       date:'2025-06-29', time:'09:19:17', balance:'0' },
-
-      // 2025-06-02
       { type:'withdraw', name:'이희진',       amount:1521990, date:'2025-06-02', time:'19:43:03', balance:'0' },
       { type:'deposit',  name:'소득세환급',   amount:1521990, date:'2025-06-02', time:'18:24:43', balance:'1,521,990' },
-
-      // 2025-05-30
       { type:'withdraw', name:'이희진',       amount:3491520, date:'2025-05-30', time:'17:26:14', balance:'0' },
-      { type:'deposit',  name:'가야대급여',       amount:3491520, date:'2025-05-30', time:'10:24:12', balance:'3,491,520' },
-
-      // 2024-12-19
+      { type:'deposit',  name:'가야대급여',   amount:3491520, date:'2025-05-30', time:'10:24:12', balance:'3,491,520' },
       { type:'withdraw', name:'이희진',       amount:1700000, date:'2024-12-19', time:'20:23:57', balance:'84,210' },
     ];
 
     /* ====== 추가세트 2: 이후 업로드하신 10장 + 추가 2장(총 12장) ====== */
     const newTransactionsSet2 = [
-      // 2025-10-10
       { type:'deposit',  name:'이효림',         amount:30000,   date:'2025-10-10', time:'19:31:13', balance:'30,000' },
-
-      // 2025-11-01 ~ 11-02
       { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-01', time:'21:16:29', balance:'2,218,620' },
       { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-02', time:'20:31:13', balance:'2,018,620' },
-
-      // 2025-09-13 (쌍으로 올라온 이미지)
       { type:'withdraw', name:'이희진',         amount:3172380, date:'2025-09-13', time:'16:39:45', balance:'0' },
-      
-      // 2025-04-10 / 04-09
       { type:'withdraw', name:'주성광',         amount:50000,    date:'2025-04-10', time:'09:08:23', balance:'0' },
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-04-09', time:'14:09:03', balance:'50,000' },
-
-      // 2025-03-23
       { type:'deposit',  name:'예금이자',       amount:0,       date:'2025-03-23', time:'11:31:51', balance:'351' },
-
-      // 2025-03-10 (입·출 한 세트)
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-03-10', time:'13:25:43', balance:'50,000' },
-      { type:'withdraw', name:'주성광',    amount:50000,   date:'2025-03-10', time:'13:26:43', balance:'0' },
-
-      // 2025-02-10 (입·출 한 세트)
+      { type:'withdraw', name:'주성광',         amount:50000,   date:'2025-03-10', time:'13:26:43', balance:'0' },
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-02-10', time:'15:16:26', balance:'50,000' },
       { type:'withdraw', name:'주성광',         amount:50000,   date:'2025-02-10', time:'16:34:44', balance:'0' },
-
-      // 2025-01-16 (입·출 한 세트)
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2025-01-16', time:'13:50:20', balance:'134,210' },
       { type:'withdraw', name:'주성광',         amount:130000,   date:'2025-01-16', time:'15:51:01', balance:'4,210' },
-
-      // 2024-12-11 / 12-10
       { type:'withdraw', name:'주성광',         amount:50000,   date:'2024-12-11', time:'09:04:09', balance:'1,784,210' },
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2024-12-10', time:'10:44:37', balance:'1,834,210' },
-
-      // 2024-11-25 급여/출금
       { type:'deposit',  name:'가야대급여',     amount:3284210, date:'2024-11-25', time:'10:15:21', balance:'3,284,210' },
-      { type:'withdraw', name:'황종하',    amount:1500000, date:'2024-11-25', time:'11:18:33', balance:'1,784,210' },
+      { type:'withdraw', name:'황종하',         amount:1500000, date:'2024-11-25', time:'11:18:33', balance:'1,784,210' },
     ];
 
     allTransactions.push(...newTransactionsSet1, ...newTransactionsSet2);
@@ -438,6 +413,13 @@
       sheet.classList.remove('show');
       renderList();
     });
+
+    // ====== 출금가능금액 표시 세팅 (추가) ======
+    const availableAmount = 1618620; // 1,618,620원
+    const availHomeEl = document.getElementById('availHome');
+    const availTxEl   = document.getElementById('availTx');
+    if (availHomeEl) availHomeEl.textContent = `${formatAmt(availableAmount)}원`;
+    if (availTxEl)   availTxEl.textContent   = `${formatAmt(availableAmount)}원`;
 
     // 초기 렌더
     renderList();
