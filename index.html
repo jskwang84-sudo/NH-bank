@@ -113,6 +113,22 @@
     .apply { margin-top:8px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
 
     .safe { height:16px; }
+
+    /* ====== (추가) 보내기 팝업 ====== */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.35);
+      display:none; z-index: 1000;
+    }
+    .modal-wrap {
+      position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      width: min(92%, 420px); background:#fff; border-radius:14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.2); display:none; z-index: 1001;
+    }
+    .modal-head { padding:14px 16px; border-bottom:1px solid #eee; font-weight:800; }
+    .modal-body { padding:14px 16px; line-height:1.5; color:#333; }
+    .modal-foot { padding:12px 16px; display:flex; gap:10px; justify-content:flex-end; }
+    .btn-outline { background:#fff; border:1px solid #e0e0e0; border-radius:10px; padding:10px 14px; font-weight:700; }
+    .btn-primary { background:#0a7c2f; color:#fff; border:0; border-radius:10px; padding:10px 14px; font-weight:800; }
   </style>
 </head>
 <body>
@@ -154,7 +170,8 @@
         <div class="btn-row" aria-hidden="true">
           <button class="action-btn" type="button">ATM출금</button>
           <button class="action-btn" type="button">채우기</button>
-          <button class="action-btn" type="button">보내기</button>
+          <!-- (추가) 보내기 버튼 식별자 부여 -->
+          <button class="action-btn" id="sendBtn" type="button">보내기</button>
         </div>
       </div>
     </div>
@@ -201,8 +218,7 @@
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
-      <!-- 오늘 기준(2025.11.08)로 노출 -->
-      <div id="filterInfo" class="filterline">2025.11.01 ~ 2025.11.08 · 전체 · 최신순</div>
+      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.08 · 전체 · 최신순</div>
     </div>
 
     <div id="txList" class="tx-list"></div>
@@ -247,6 +263,20 @@
       <button class="apply" id="applyFilter">조회</button>
     </div>
     <div class="safe"></div>
+  </div>
+
+  <!-- ====== (추가) 보내기 버튼 팝업 ====== -->
+  <div class="modal-backdrop" id="sendModalBg"></div>
+  <div class="modal-wrap" role="dialog" aria-modal="true" aria-labelledby="sendModalTitle" id="sendModal">
+    <div class="modal-head" id="sendModalTitle">안내</div>
+    <div class="modal-body">
+      본 계좌는 『금융거래한도계좌』로 설정되어 있어, 오늘 이체 가능 금액이 <b>20만원</b>으로 제한됩니다.<br/>
+      더 궁금하신 사항은 고객센터(☎ 1661-3000)로 문의해 주세요.
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" id="sendModalClose">닫기</button>
+      <button class="btn-primary" id="sendModalOk">확인</button>
+    </div>
   </div>
 
   <script>
@@ -311,8 +341,8 @@
       { type:'withdraw', name:'주성광',         amount:130000,   date:'2025-01-16', time:'15:51:01', balance:'4,210' },
       { type:'withdraw', name:'주성광',         amount:50000,   date:'2024-12-11', time:'09:04:09', balance:'1,784,210' },
       { type:'deposit',  name:'가야대산학협력단', amount:50000,   date:'2024-12-10', time:'10:44:37', balance:'1,834,210' },
-      { type:'deposit',  name:'가야대급여',     amount:3284210, date:'2024-11-25', time:'10:15:21', balance:'3,284,210' },
-      { type:'withdraw', name:'황종하',         amount:1500000, date:'2024-11-25', time:'11:18:33', balance:'1,784,210' },
+      { type:'deposit',  name:'가야대급여',     amount:2784210, date:'2024-11-25', time:'10:15:21', balance:'2,784,210' },
+      { type:'withdraw', name:'황종하',         amount:1000000, date:'2024-11-25', time:'11:18:33', balance:'1,784,210' },
     ];
 
     allTransactions.push(...newTransactionsSet1, ...newTransactionsSet2);
@@ -329,7 +359,7 @@
       return `${y}.${m}.${dd}`;
     }
     function periodRange(period){
-      const end = new Date('2025-11-08T23:59:59'); // 기준일(오늘)
+      const end = new Date('2025-11-08T23:59:59'); // (수정) 기준일 = 2025-11-08
       const start = new Date(end);
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
@@ -421,6 +451,31 @@
     const availTxEl   = document.getElementById('availTx');
     if (availHomeEl) availHomeEl.textContent = `${formatAmt(availableAmount)}원`;
     if (availTxEl)   availTxEl.textContent   = `${formatAmt(availableAmount)}원`;
+
+    // ====== (추가) 보내기 버튼 팝업 동작 ======
+    const sendBtn = document.getElementById('sendBtn');
+    const modal   = document.getElementById('sendModal');
+    const modalBg = document.getElementById('sendModalBg');
+    const btnOk   = document.getElementById('sendModalOk');
+    const btnClose= document.getElementById('sendModalClose');
+
+    function openSendModal(){
+      modalBg.style.display = 'block';
+      modal.style.display   = 'block';
+    }
+    function closeSendModal(){
+      modalBg.style.display = 'none';
+      modal.style.display   = 'none';
+    }
+
+    if (sendBtn){
+      sendBtn.addEventListener('click', (e)=>{
+        // 홈 카드 자체의 클릭(거래내역 전환) 방지
+        e.stopPropagation();
+        openSendModal();
+      });
+    }
+    [modalBg, btnOk, btnClose].forEach(el => el && el.addEventListener('click', closeSendModal));
 
     // 초기 렌더
     renderList();
