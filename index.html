@@ -218,7 +218,7 @@
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
-      <div id="filterInfo" class="filterline">2024.11.09 ~ 2025.11.09 · 전체 · 최신순</div>
+      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.09 · 전체 · 최신순</div>
     </div>
 
     <div id="txList" class="tx-list"></div>
@@ -360,7 +360,7 @@
       return `${y}.${m}.${dd}`;
     }
     function periodRange(period){
-      const end = new Date('2025-11-08T23:59:59'); // (수정) 기준일 = 2025-11-09
+      const end = new Date('2025-11-09T23:59:59'); // (수정) 기준일 = 2025-11-09
       const start = new Date(end);
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
@@ -447,7 +447,7 @@
     });
 
     // ====== 출금가능금액 표시 세팅 (추가) ======
-    const availableAmount = 1618620; // 1,418,620원
+    const availableAmount = 1418620; // 1,418,620원
     const availHomeEl = document.getElementById('availHome');
     const availTxEl   = document.getElementById('availTx');
     if (availHomeEl) availHomeEl.textContent = `${formatAmt(availableAmount)}원`;
