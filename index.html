@@ -218,7 +218,7 @@
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
-      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.08 · 전체 · 최신순</div>
+      <div id="filterInfo" class="filterline">2024.11.09 ~ 2025.11.09 · 전체 · 최신순</div>
     </div>
 
     <div id="txList" class="tx-list"></div>
@@ -359,17 +359,15 @@
       const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}.${m}.${dd}`;
     }
-    function withinPeriod(d, p) {
-  const end = new Date(); // 오늘 날짜 자동 반영
-  end.setHours(23, 59, 59, 999); // 하루 끝 시점으로 설정
-  const start = new Date(end);
-  if (p === '1m') start.setMonth(end.getMonth() - 1);
-  if (p === '3m') start.setMonth(end.getMonth() - 3);
-  if (p === '6m') start.setMonth(end.getMonth() - 6);
-  if (p === '1y') start.setFullYear(end.getFullYear() - 1);
-  const dt = new Date(d.date + 'T' + d.time);
-  return dt >= start && dt <= end;
-}
+    function periodRange(period){
+      const end = new Date('2025-11-08T23:59:59'); // (수정) 기준일 = 2025-11-09
+      const start = new Date(end);
+      if(period==='1week')  start.setDate(end.getDate()-7);
+      if(period==='1month') start.setMonth(end.getMonth()-1);
+      if(period==='3months')start.setMonth(end.getMonth()-3);
+      if(period==='1year')  start.setFullYear(end.getFullYear()-1);
+      return { start, end, label:`${fmtDate(start)} ~ ${fmtDate(end)}` };
+    }
 
     function renderList(){
       const r = periodRange(filterState.period);
