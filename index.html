@@ -201,7 +201,8 @@
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
-      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.07 · 전체 · 최신순</div>
+      <!-- 오늘 기준(2025.11.08)로 노출 -->
+      <div id="filterInfo" class="filterline">2025.11.01 ~ 2025.11.08 · 전체 · 최신순</div>
     </div>
 
     <div id="txList" class="tx-list"></div>
@@ -328,7 +329,7 @@
       return `${y}.${m}.${dd}`;
     }
     function periodRange(period){
-      const end = new Date('2025-11-07T23:59:59'); // 기준일
+      const end = new Date('2025-11-08T23:59:59'); // 기준일(오늘)
       const start = new Date(end);
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
