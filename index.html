@@ -295,6 +295,7 @@
     /* ======= 거래 데이터 / 필터 ======= */
     const allTransactions = [
       // (기존 예시 내역 보존)
+      { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-09', time:'19:22:57', balance:'1,218,620' },
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-08', time:'22:25:08', balance:'1,418,620' },
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-04', time:'21:22:32', balance:'1,618,620' },
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-11-03', time:'22:00:55', balance:'1,818,620' },
@@ -360,7 +361,7 @@
       return `${y}.${m}.${dd}`;
     }
     function periodRange(period){
-      const end = new Date('2025-11-09T23:59:59'); // (수정) 기준일 = 2025-11-09
+      const end = new Date('2025-11-10T23:59:59'); // (수정) 기준일 = 2025-11-10
       const start = new Date(end);
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
@@ -447,7 +448,7 @@
     });
 
     // ====== 출금가능금액 표시 세팅 (추가) ======
-    const availableAmount = 1418620; // 1,418,620원
+    const availableAmount = 1218620; // 1,218,620원
     const availHomeEl = document.getElementById('availHome');
     const availTxEl   = document.getElementById('availTx');
     if (availHomeEl) availHomeEl.textContent = `${formatAmt(availableAmount)}원`;
