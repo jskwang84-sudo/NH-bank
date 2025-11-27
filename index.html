@@ -353,7 +353,7 @@
       return `${y}.${m}.${dd}`;
     }
     function periodRange(period){
-      const end = new Date('2025-11-25T23:59:59'); // (수정) 기준일 = 2025-11-25
+      const end = new Date('2025-11-27T23:59:59'); // (수정) 기준일 = 2025-11-27
       const start = new Date(end);
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
