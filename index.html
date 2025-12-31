@@ -47,11 +47,7 @@
     .btn-row { display:flex; gap:10px; margin-top:14px; }
     .action-btn { flex:1; height:40px; border:0; border-radius:10px; background:#f1f1f5; font-weight:700; color:#333; }
 
-    /* 한도제한계좌 배지 */
-    .pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:14px; font-size:12px; margin-bottom:6px; }
-    .pill-gray { background:#f1f3f5; color:#666; border:1px solid #e5e7ea; }
-
-    /* 출금가능금액 라인 (추가) */
+    /* 출금가능금액 라인 */
     .availline { font-size:13px; color:#555; margin-top:6px; }
     .availline b { font-weight:800; color:#111; }
     .avail-right { text-align:right; }
@@ -113,22 +109,6 @@
     .apply { margin-top:8px; width:100%; background:#0a7c2f; color:#fff; border:0; border-radius:12px; padding:14px; font-size:16px; font-weight:800; }
 
     .safe { height:16px; }
-
-    /* ====== (추가) 보내기 팝업 ====== */
-    .modal-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,.35);
-      display:none; z-index: 1000;
-    }
-    .modal-wrap {
-      position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      width: min(92%, 420px); background:#fff; border-radius:14px;
-      box-shadow: 0 8px 28px rgba(0,0,0,.2); display:none; z-index: 1001;
-    }
-    .modal-head { padding:14px 16px; border-bottom:1px solid #eee; font-weight:800; }
-    .modal-body { padding:14px 16px; line-height:1.5; color:#333; }
-    .modal-foot { padding:12px 16px; display:flex; gap:10px; justify-content:flex-end; }
-    .btn-outline { background:#fff; border:1px solid #e0e0e0; border-radius:10px; padding:10px 14px; font-weight:700; }
-    .btn-primary { background:#0a7c2f; color:#fff; border:0; border-radius:10px; padding:10px 14px; font-weight:800; }
   </style>
 </head>
 <body>
@@ -163,13 +143,12 @@
         <div class="acct-title">NH페이모아통장(비대면실명확인)</div>
         <div class="acct-num">302-1934-2120-51</div>
 
-        <!-- 출금가능금액 표시 (추가) -->
+        <!-- 출금가능금액 표시 -->
         <div class="availline avail-right">출금가능금액 <b id="availHome">-</b></div>
 
         <div class="btn-row" aria-hidden="true">
           <button class="action-btn" type="button">ATM출금</button>
           <button class="action-btn" type="button">채우기</button>
-          <!-- (추가) 보내기 버튼 식별자 부여 -->
           <button class="action-btn" id="sendBtn" type="button">보내기</button>
         </div>
       </div>
@@ -212,12 +191,12 @@
         <div class="bankblock">
           <div class="bankline">NH농협 302-1934-2120-51</div>
           <div class="acctline">NH페이모아통장(비대면실명확인)</div>
-          <!-- 출금가능금액 표시 (추가) -->
+          <!-- 출금가능금액 표시 -->
           <div class="availline">출금가능금액 <b id="availTx">-</b></div>
         </div>
         <button id="openFilter" class="filter-btn" aria-label="기간 설정">⚙️</button>
       </div>
-      <div id="filterInfo" class="filterline">2024.11.08 ~ 2025.11.09 · 전체 · 최신순</div>
+      <div id="filterInfo" class="filterline">조회 중...</div>
     </div>
 
     <div id="txList" class="tx-list"></div>
@@ -264,20 +243,6 @@
     <div class="safe"></div>
   </div>
 
-  <!-- ====== (추가) 보내기 버튼 팝업 ====== -->
-  <div class="modal-backdrop" id="sendModalBg"></div>
-  <div class="modal-wrap" role="dialog" aria-modal="true" aria-labelledby="sendModalTitle" id="sendModal">
-    <div class="modal-head" id="sendModalTitle">안내</div>
-    <div class="modal-body">
-      본 계좌는 『금융거래한도계좌』로 설정되어 있어, 오늘 이체 가능 금액이 <b>20만원</b>으로 제한됩니다.<br/>
-      더 궁금하신 사항은 고객센터(☎ 1661-3000)로 문의해 주세요.
-    </div>
-    <div class="modal-foot">
-      <button class="btn-outline" id="sendModalClose">닫기</button>
-      <button class="btn-primary" id="sendModalOk">확인</button>
-    </div>
-  </div>
-
   <script>
     /* ======= 화면 전환 ======= */
     const homeView = document.getElementById('homeView');
@@ -293,7 +258,6 @@
 
     /* ======= 거래 데이터 / 필터 ======= */
     const allTransactions = [
-      // (기존 예시 내역 보존)
       { type:'deposit',  name:'가야대출장비',   amount:100000, date:'2025-12-31', time:'15:06:55', balance:'3,734,040' },
       { type:'deposit',  name:'가야대출장비',   amount:120200, date:'2025-12-31', time:'15:05:11', balance:'3,634,040' },
       { type:'deposit',  name:'가야대학교',   amount:273600, date:'2025-12-31', time:'10:31:05', balance:'3,513,840' },
@@ -314,8 +278,6 @@
       { type:'withdraw', name:'이희진',  amount:200000,  date:'2025-10-28', time:'20:51:03', balance:'3,018,620' },
       { type:'withdraw', name:'이희진',  amount:30000,   date:'2025-10-10', time:'19:34:52', balance:'0' },
       { type:'deposit',  name:'가야대급여',   amount:3218620, date:'2025-10-28', time:'09:18:45', balance:'3,218,620' },
-
-      /* ====== 추가세트 1: 앞서 업로드한 11개 이미지 (여러 건 포함) ====== */
       { type:'withdraw', name:'이희진',       amount:2824730, date:'2025-01-25', time:'10:08:33', balance:'0' },
       { type:'deposit',  name:'가야대급여',   amount:2820520, date:'2025-01-24', time:'09:18:45', balance:'2,824,730' },
       { type:'withdraw', name:'정두순',       amount:100000,  date:'2025-01-23', time:'10:18:26', balance:'4,210' },
@@ -331,8 +293,6 @@
       { type:'withdraw', name:'이희진',       amount:3491520, date:'2025-05-30', time:'17:26:14', balance:'0' },
       { type:'deposit',  name:'가야대급여',   amount:3491520, date:'2025-05-30', time:'10:24:12', balance:'3,491,520' },
       { type:'withdraw', name:'이희진',       amount:1700000, date:'2024-12-19', time:'20:23:57', balance:'84,210' },
-
-      /* ====== 추가세트 2: 이후 업로드하신 10장 + 추가 2장(총 12장) ====== */
       { type:'deposit',  name:'이효림',         amount:30000,   date:'2025-10-10', time:'19:31:13', balance:'30,000' },
       { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-01', time:'21:16:29', balance:'2,218,620' },
       { type:'withdraw', name:'이희진',         amount:200000,  date:'2025-11-02', time:'20:31:13', balance:'2,018,620' },
@@ -359,24 +319,55 @@
     let filterState = { period:'1week', sort:'latest', type:'all' };
 
     function formatAmt(n){ return Number(n).toLocaleString('ko-KR'); }
+    
     function fmtDate(d){
       const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
       return `${y}.${m}.${dd}`;
     }
+    
+    // 3. 현재 날짜를 기준으로 기간 계산 (핸드폰 날짜 자동 갱신)
     function periodRange(period){
-      const end = new Date('2025-11-09T23:59:59'); // (수정) 기준일 = 2025-11-09
+      const end = new Date(); // 현재 날짜로 변경
+      end.setHours(23, 59, 59, 999);
       const start = new Date(end);
+      
       if(period==='1week')  start.setDate(end.getDate()-7);
       if(period==='1month') start.setMonth(end.getMonth()-1);
       if(period==='3months')start.setMonth(end.getMonth()-3);
       if(period==='1year')  start.setFullYear(end.getFullYear()-1);
+      
       return { start, end, label:`${fmtDate(start)} ~ ${fmtDate(end)}` };
     }
 
+    // 1. 출금가능금액을 거래내역 최종 잔고에 따라 자동 갱신
+    function updateAvailableAmount() {
+      // 모든 거래를 날짜순으로 정렬하여 가장 최근 거래 찾기
+      const sortedTransactions = [...allTransactions].sort((a,b) => 
+        new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`)
+      );
+      
+      // 가장 최근 거래의 잔액
+      if (sortedTransactions.length > 0) {
+        const latestBalance = sortedTransactions[0].balance;
+        // 쉼표 제거하고 숫자로 변환
+        const balanceNum = parseInt(latestBalance.replace(/,/g, ''));
+        
+        const availHomeEl = document.getElementById('availHome');
+        const availTxEl   = document.getElementById('availTx');
+        
+        if (availHomeEl) availHomeEl.textContent = `${formatAmt(balanceNum)}원`;
+        if (availTxEl)   availTxEl.textContent   = `${formatAmt(balanceNum)}원`;
+      }
+    }
+
+    // 4. 거래내역 렌더링 (조회 기간에 따라 필터링)
     function renderList(){
       const r = periodRange(filterState.period);
 
-      let items = allTransactions.filter(t => new Date(`${t.date}T${t.time}`) >= r.start);
+      let items = allTransactions.filter(t => {
+        const txDate = new Date(`${t.date}T${t.time}`);
+        return txDate >= r.start && txDate <= r.end;
+      });
 
       if (filterState.type !== 'all') {
         items = items.filter(t => t.type === filterState.type);
@@ -393,6 +384,7 @@
         txListEl.innerHTML = `<div style="padding:36px; text-align:center; color:#999;">거래내역이 없습니다</div>`;
         return;
       }
+      
       txListEl.innerHTML = items.map(t => {
         const cls = t.type === 'deposit' ? 'deposit' : 'withdraw';
         const label = t.type === 'deposit' ? '입금' : '출금';
@@ -450,40 +442,18 @@
       renderList();
     });
 
-    // ====== 출금가능금액 표시 세팅 (추가) ======
-    const availableAmount = 1418620; // 1,418,620원
-    const availHomeEl = document.getElementById('availHome');
-    const availTxEl   = document.getElementById('availTx');
-    if (availHomeEl) availHomeEl.textContent = `${formatAmt(availableAmount)}원`;
-    if (availTxEl)   availTxEl.textContent   = `${formatAmt(availableAmount)}원`;
-
-    // ====== (추가) 보내기 버튼 팝업 동작 ======
+    // 2. 보내기 버튼 팝업 삭제 - 기본 동작 없음
     const sendBtn = document.getElementById('sendBtn');
-    const modal   = document.getElementById('sendModal');
-    const modalBg = document.getElementById('sendModalBg');
-    const btnOk   = document.getElementById('sendModalOk');
-    const btnClose= document.getElementById('sendModalClose');
-
-    function openSendModal(){
-      modalBg.style.display = 'block';
-      modal.style.display   = 'block';
-    }
-    function closeSendModal(){
-      modalBg.style.display = 'none';
-      modal.style.display   = 'none';
-    }
-
     if (sendBtn){
       sendBtn.addEventListener('click', (e)=>{
-        // 홈 카드 자체의 클릭(거래내역 전환) 방지
         e.stopPropagation();
-        openSendModal();
+        // 팝업 없이 아무 동작 안함
       });
     }
-    [modalBg, btnOk, btnClose].forEach(el => el && el.addEventListener('click', closeSendModal));
 
-    // 초기 렌더
-    renderList();
+    // 초기화
+    updateAvailableAmount(); // 출금가능금액 업데이트
+    renderList(); // 거래내역 렌더
   </script>
 </body>
 </html>
